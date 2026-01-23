@@ -1,5 +1,7 @@
 import React from 'react';
 import { Mail, Linkedin, Twitter, Github } from 'lucide-react';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
 
 export const Footer: React.FC = () => {
   return (
@@ -8,20 +10,20 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-primary mb-4">Dr. Maya Chen</h3>
+            <h3 className="text-2xl mb-4">Kshiti Patel</h3>
             <p className="text-foreground/70 mb-4">
-              Postdoctoral Research Fellow in Computational Neuroscience at Stanford University
+              Frontend Developer specializing in React & TypeScript. Passionate about building high-performance, scalable web applications.
             </p>
             <div className="flex gap-4">
               <a
-                href="mailto:maya.chen@stanford.edu"
+                href="mailto:kshiti.de@gmail.com"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary transition-colors"
                 aria-label="Email"
               >
                 <Mail className="w-5 h-5" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/kshitipatel1999/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary transition-colors"
@@ -30,16 +32,7 @@ export const Footer: React.FC = () => {
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="https://github.com"
+                href="https://github.com/kshiti-codes"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary transition-colors"
@@ -64,18 +57,26 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <button
-                  onClick={() => document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-foreground/70 hover:text-primary transition-colors"
                 >
-                  Research Timeline
+                  Skills
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => document.getElementById('publications')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-foreground/70 hover:text-primary transition-colors"
                 >
-                  Publications
+                  Experience
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-foreground/70 hover:text-primary transition-colors"
+                >
+                  Projects
                 </button>
               </li>
               <li>
@@ -97,45 +98,27 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Resources */}
+          {/* Opportunities */}
           <div>
-            <h4 className="text-primary mb-4">Academic Resources</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-foreground/70 hover:text-primary transition-colors">
-                  Download CV
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-foreground/70 hover:text-primary transition-colors">
-                  ORCID Profile
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-foreground/70 hover:text-primary transition-colors">
-                  Google Scholar
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-foreground/70 hover:text-primary transition-colors">
-                  ResearchGate
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-foreground/70 hover:text-primary transition-colors">
-                  GitHub Repositories
-                </a>
-              </li>
-            </ul>
+          <Card className="p-8 bg-card/80 backdrop-blur-sm" style={{ margin: -16 }}>
+              <h3 className="text-2xl text-primary mb-4">Seeking Opportunities</h3>
+              <p className="text-foreground/80 mb-6">
+                I am actively seeking freelance and full-time frontend development opportunities. 
+                I would be delighted to discuss potential projects and share my technical expertise in React and TypeScript.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary">React</Badge>
+                <Badge variant="secondary">TypeScript</Badge>
+                <Badge variant="secondary">Next.js</Badge>
+                <Badge variant="secondary">Vue.js</Badge>
+              </div>
+            </Card>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-border text-center">
           <p className="text-foreground/60">
-            © {new Date().getFullYear()} Dr. Maya Chen. All rights reserved.
-          </p>
-          <p className="text-foreground/60 mt-2">
-            Actively seeking faculty positions in Computational Neuroscience
+            © {new Date().getFullYear()} Kshiti Patel All rights reserved.
           </p>
         </div>
       </div>

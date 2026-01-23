@@ -6,7 +6,8 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
-import { Mail, Linkedin, Twitter, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Linkedin, Twitter, MapPin, Send, CheckCircle2, Github, Slack, Code2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -51,41 +52,68 @@ export const Contact: React.FC = () => {
 
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    
-    setTimeout(() => setIsSubmitted(false), 5000);
+    try {
+      // EmailJS configuration from environment variables
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      // Validate environment variables
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error('EmailJS configuration is missing. Please check your environment variables.');
+      }
+
+      // Prepare template parameters
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        to_name: 'Kshiti Patel',
+      };
+
+      // Send email using EmailJS
+      await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams,
+        publicKey
+      );
+
+      setIsSubmitted(true);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      
+      setTimeout(() => setIsSubmitted(false), 5000);
+      
+    } catch (error) {
+      console.error('Email send error:', error);
+      setErrors({
+        submit: 'Failed to send message. Please try emailing me directly at kshiti.de@gmail.com'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
     {
       icon: Mail,
       label: 'Email',
-      value: 'maya.chen@stanford.edu',
-      href: 'mailto:maya.chen@stanford.edu'
+      value: 'kshiti.de@gmail.com',
+      href: 'mailto:kshiti.de@gmail.com'
     },
     {
       icon: MapPin,
       label: 'Location',
-      value: 'Stanford University, CA',
+      value: 'Hamburg, Germany',
       href: null
     },
     {
       icon: Linkedin,
       label: 'LinkedIn',
-      value: 'linkedin.com/in/mayachen',
-      href: 'https://linkedin.com'
+      value: 'linkedin.com/in/kshitipatel1999',
+      href: 'https://www.linkedin.com/in/kshitipatel1999/'
     },
-    {
-      icon: Twitter,
-      label: 'Twitter',
-      value: '@MayaChenNeuro',
-      href: 'https://twitter.com'
-    }
   ];
 
   return (
@@ -101,7 +129,7 @@ export const Contact: React.FC = () => {
           <h2 className="text-4xl sm:text-5xl text-primary mb-4">Get In Touch</h2>
           <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full mb-6" />
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            I'm always interested in new collaborations, faculty opportunities, and engaging discussions about neuroscience
+            I'm always interested in new collaborations, freelance opportunities, and engaging discussions about frontend development
           </p>
         </motion.div>
 
@@ -130,8 +158,14 @@ export const Contact: React.FC = () => {
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {errors.submit && (
+                    <div className="p-4 rounded-lg bg-red-50 text-red-800 border border-red-200">
+                      <p className="text-sm">{errors.submit}</p>
+                    </div>
+                  )}
+                  
                   <div>
-                    <Label htmlFor="name">Name *</Label>
+                    <Label htmlFor="name" className="text-primary mb-2">Name *</Label>
                     <Input
                       id="name"
                       name="name"
@@ -146,7 +180,7 @@ export const Contact: React.FC = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="text-primary mb-2">Email *</Label>
                     <Input
                       id="email"
                       name="email"
@@ -162,7 +196,7 @@ export const Contact: React.FC = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="subject">Subject *</Label>
+                    <Label htmlFor="subject" className="text-primary mb-2">Subject *</Label>
                     <Input
                       id="subject"
                       name="subject"
@@ -177,7 +211,7 @@ export const Contact: React.FC = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="message">Message *</Label>
+                    <Label htmlFor="message" className="text-primary mb-2">Message *</Label>
                     <Textarea
                       id="message"
                       name="message"
@@ -243,49 +277,25 @@ export const Contact: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </Card>
-
-            <Card className="p-8 bg-card/80 backdrop-blur-sm">
-              <h3 className="text-2xl text-primary mb-4">Faculty Opportunities</h3>
-              <p className="text-foreground/80 mb-6">
-                I am actively seeking tenure-track faculty positions in Neuroscience, 
-                Computational Biology, or related fields. I would be delighted to discuss 
-                potential opportunities and share my research vision.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Badge className="bg-primary/10 text-primary border-primary/20">
-                  Computational Neuroscience
-                </Badge>
-                <Badge className="bg-primary/10 text-primary border-primary/20">
-                  Systems Neuroscience
-                </Badge>
-                <Badge className="bg-primary/10 text-primary border-primary/20">
-                  Machine Learning
-                </Badge>
+              <div className="flex items-center gap-6 mt-8">
+              <a href="https://github.com/kshiti-codes" target="_blank" rel="noopener noreferrer" className="mt-6 items-center text-primary hover:underline">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Github className="w-6 h-6 text-primary" />
+                </div>
+              </a>
+              <a href="https://kshitis-worspace.slack.com/team/U090PREEWLD" target="_blank" rel="noopener noreferrer" className="mt-6 items-center text-primary hover:underline">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Slack className="w-6 h-6 text-primary" />
+                </div>
+              </a>
+              <a href="https://www.hackerrank.com/profile/kshiti_de" target="_blank" rel="noopener noreferrer" className="mt-6 items-center text-primary hover:underline">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Code2 className="w-6 h-6 text-primary" />
+                </div>
+              </a>
               </div>
             </Card>
 
-            <Card className="p-8 bg-card/80 backdrop-blur-sm">
-              <h3 className="text-2xl text-primary mb-4">Interested In</h3>
-              <ul className="space-y-2 text-foreground/80">
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-1">•</span>
-                  <span>Research collaborations and joint projects</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-1">•</span>
-                  <span>Speaking invitations and seminars</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-1">•</span>
-                  <span>Mentoring opportunities</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-1">•</span>
-                  <span>Open science and data sharing initiatives</span>
-                </li>
-              </ul>
-            </Card>
           </motion.div>
         </div>
       </div>

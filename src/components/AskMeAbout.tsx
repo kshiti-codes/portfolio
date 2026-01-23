@@ -5,31 +5,39 @@ import { Badge } from './ui/badge';
 
 export const AskMeAbout: React.FC = () => {
   const topics = [
-    {
-      title: "Memory Consolidation Models",
-      description: "How computational frameworks explain the transfer of memories from hippocampus to neocortex"
-    },
-    {
-      title: "Open Science Practices",
-      description: "The importance of sharing code, data, and making research reproducible"
-    },
-    {
-      title: "Academia-Industry Collaboration",
-      description: "Bridging the gap between theoretical neuroscience and practical applications"
-    },
-    {
-      title: "Neural Network Dynamics",
-      description: "Understanding how recurrent connectivity shapes information processing"
-    },
-    {
-      title: "Transitioning to Faculty",
-      description: "Navigating the postdoc-to-professor career path and building an independent lab"
-    },
-    {
-      title: "Computational Tools",
-      description: "Python, TensorFlow, and other essential tools for computational neuroscience"
-    }
-  ];
+  {
+    title: "AI-Powered Code Review Assistant",
+    description: "Interactive web app using Claude API to analyze code quality, suggest improvements, and explain best practices in real-time"
+  },
+  {
+    title: "Smart Content Generator Dashboard",
+    description: "React application integrating multiple AI models for generating, editing, and optimizing written content with live previews"
+  },
+  {
+    title: "Component Library & Design System",
+    description: "Comprehensive UI component library built with React, TypeScript, and Storybook for scalable design consistency"
+  },
+  {
+    title: "Performance Optimization Techniques",
+    description: "Demonstrating code splitting, lazy loading, memoization, and other strategies to achieve sub-second load times"
+  },
+  {
+    title: "Accessibility-First Development",
+    description: "Building WCAG 2.1 AA compliant interfaces with screen reader support, keyboard navigation, and semantic HTML"
+  },
+  {
+    title: "State Management Patterns",
+    description: "Implementing complex application state using Redux, Context API, Zustand, and comparing trade-offs"
+  },
+  {
+    title: "Responsive & Adaptive Design",
+    description: "Mobile-first approaches, CSS Grid/Flexbox mastery, and progressive enhancement techniques"
+  },
+  {
+    title: "Testing & Quality Assurance",
+    description: "Unit testing with Jest, E2E testing with Playwright, and implementing CI/CD pipelines"
+  }
+];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -46,7 +54,7 @@ export const AskMeAbout: React.FC = () => {
       <div className="flex items-center gap-2 mb-4">
         <h4 className="text-primary">Ask Me About</h4>
         <Badge className="bg-accent/20 text-accent border-accent/30">
-          Rotating Topics
+          Related Topics
         </Badge>
       </div>
       

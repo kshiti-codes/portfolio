@@ -26,37 +26,37 @@ export const Hero: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-6"
+              className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-3 lg:mb-6"
             >
-              <span className="text-primary">Postdoctoral Research Fellow</span>
+              <span className="text-primary sm:text-3xl">Frontend Developer</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-5xl sm:text-6xl lg:text-7xl mb-6 text-foreground"
+              className="text-2xl sm:text-4xl lg:text-7xl mb-3 lg:mb-6 text-foreground"
               style={{ fontWeight: 700, lineHeight: 1.1 }}
             >
-              Dr. Maya Chen
+              Kshiti Patel
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-xl sm:text-2xl text-muted-foreground mb-8"
+              className="text-base sm:text-2xl lg:text-xl text-muted-foreground mb-3 lg:mb-8"
             >
-              Computational Neuroscience
+              React & TypeScript Specialist
             </motion.p>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
-              className="text-lg text-foreground/80 mb-8 max-w-xl mx-auto lg:mx-0"
+              className="text-base md:text-base lg:text-lg text-foreground/80 mb-4 sm:mb-5 lg:mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
             >
-              Developing computational models to understand how neural networks encode and consolidate memory
+              Building high-performance, scalable web applications that serve millions of users through modern React architectures, state management patterns, and performance optimization strategies
             </motion.p>
 
             <motion.div
@@ -69,7 +69,7 @@ export const Hero: React.FC = () => {
                 onClick={() => document.getElementById('publications')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-6 py-3 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg transition-all transform hover:scale-105 shadow-lg"
               >
-                View Publications
+                View Experience 
               </button>
               <button
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
@@ -89,10 +89,10 @@ export const Hero: React.FC = () => {
           >
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-full blur-3xl opacity-20 animate-pulse" />
-              <div className="relative aspect-square max-w-md mx-auto rounded-full overflow-hidden shadow-2xl ring-4 ring-primary/20">
+              <div className="relative aspect-square w-40 sm:w-48 md:w-56 lg:w-50 xl:w-96 mx-auto rounded-full overflow-hidden shadow-2xl ring-4 ring-primary/20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1758685848783-90477ba42678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMHNjaWVudGlzdCUyMHJlc2VhcmNoZXJ8ZW58MXx8fHwxNzYxNzYwMDg0fDA&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Dr. Maya Chen"
+                  src="./images/about/profile.jpg"
+                  alt="Kshiti Patel"
                   className="w-full h-full object-cover"
                 />
               </div>

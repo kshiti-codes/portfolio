@@ -35,9 +35,10 @@ export const Navigation: React.FC = () => {
 
   const navItems = [
     { label: 'About', id: 'about' },
-    { label: 'Research', id: 'timeline' },
-    { label: 'Publications', id: 'publications' },
-    { label: 'Blog', id: 'blog' },
+    { label: 'Skills', id: 'skills' },
+    { label: 'Experience', id: 'timeline' },
+    { label: 'Projects', id: 'projects' },
+    // { label: 'Blog', id: 'blog' },
     { label: 'Contact', id: 'contact' }
   ];
 
@@ -54,9 +55,9 @@ export const Navigation: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <button 
               onClick={() => scrollToSection('hero')}
-              className="text-primary transition-colors hover:text-secondary"
+              className="text-2xl transition-colors hover:text-secondary"
             >
-              Dr. Maya Chen
+              Kshiti Patel
             </button>
 
             {/* Desktop Navigation */}

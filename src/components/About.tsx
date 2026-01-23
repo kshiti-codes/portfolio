@@ -11,32 +11,27 @@ export const About: React.FC = () => {
       icon: GraduationCap,
       title: 'Education',
       items: [
-        'PhD in Neuroscience, MIT',
-        'BSc in Computer Science & Biology, Stanford University'
+        'B.Tech in Information Technology, Charotar University of Science and Technology (2016-2020)',
       ]
     },
     {
       icon: BookOpen,
-      title: 'Current Position',
+      title: 'Experience',
       items: [
-        'Postdoctoral Research Fellow',
-        'Stanford University, Computational Neuroscience Lab'
+        '6+ years of experience in building scalable web applications',
       ]
     },
     {
       icon: Award,
-      title: 'Recognition',
+      title: 'Projects',
       items: [
-        '12 peer-reviewed publications (last 3 years)',
-        'NSF Graduate Research Fellowship'
+        '20+ completed projects for diverse clients',
       ]
     }
   ];
 
   const links = [
-    { label: 'Download CV', icon: ExternalLink, href: '#' },
-    { label: 'ORCID Profile', icon: ExternalLink, href: '#' },
-    { label: 'Google Scholar', icon: ExternalLink, href: '#' }
+    { label: 'Download CV', icon: ExternalLink, href: './pdf/kshitipatel.pdf' },
   ];
 
   return (
@@ -63,20 +58,13 @@ export const About: React.FC = () => {
         >
           <Card className="p-8 backdrop-blur-sm bg-card/80">
             <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-              I am a computational neuroscientist passionate about understanding the fundamental principles 
-              of memory formation and consolidation. My research combines mathematical modeling, machine learning, 
-              and experimental data analysis to uncover how neural circuits encode, store, and retrieve information.
+              I'm a frontend engineer based in Hamburg, Germany, who's obsessed with building web experiences that don't just work, but feel effortless.
             </p>
             <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-              During my PhD at MIT, I developed novel computational frameworks for modeling hippocampal-cortical 
-              interactions during memory consolidation. Currently, as a postdoc at Stanford, I'm investigating 
-              how network dynamics in prefrontal cortex support working memory and cognitive flexibility.
+            Over the past 6 years, I've evolved from junior developer to someone who architects enterprise-scale solutions serving 176+ organizations globally. I've improved application performance by 60%, pushed test coverage to 90%+, and optimized Core Web Vitals until they're consistently green. But here's what really drives me: the challenge of making complexity feel effortless. Whether it's Redux state management for real-time inventory systems or implementing server-side rendering for e-commerce platforms, I thrive on technical challenges that directly impact user experience.  
             </p>
             <p className="text-lg text-foreground/90 leading-relaxed">
-              With <span className="text-accent">12 peer-reviewed publications</span> in the last three years 
-              and extensive experience in both computational and experimental neuroscience, I am actively seeking 
-              faculty positions where I can establish an independent research program at the intersection of 
-              theory and experiment.
+              I work best with autonomy and ownership – give me a problem, and I'll take it from conception to deployment. Currently, I'm an independent consultant building high-performance solutions for e-commerce clients, staying obsessed with accessibility standards, modern architecture patterns, and the endless pursuit of faster, better, cleaner code. Always open to interesting projects and conversations about frontend engineering.
             </p>
           </Card>
         </motion.div>
@@ -151,8 +139,8 @@ export const About: React.FC = () => {
         >
           <div className="inline-block px-6 py-3 bg-accent/10 border-2 border-accent/30 rounded-lg">
             <p className="text-foreground/90">
-              <span className="text-accent">Currently seeking faculty positions</span> in 
-              Neuroscience, Computational Biology, or related fields
+              <span className="text-accent">Currently seeking Frontend Developer positions</span> in 
+              dynamic teams where I can contribute my expertise in React and TypeScript to build exceptional web applications.
             </p>
           </div>
         </motion.div>
