@@ -38,6 +38,7 @@ export const Navigation: React.FC = () => {
     { label: 'Skills', id: 'skills' },
     { label: 'Experience', id: 'timeline' },
     { label: 'Projects', id: 'projects' },
+    { label: 'Certifications', id: 'certifications' },
     // { label: 'Blog', id: 'blog' },
     { label: 'Contact', id: 'contact' }
   ];

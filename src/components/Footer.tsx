@@ -79,6 +79,14 @@ export const Footer: React.FC = () => {
                   Projects
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => document.getElementById('certifications')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-foreground/70 hover:text-primary transition-colors"
+                >
+                  Certifications
+                </button>
+              </li>
               {/* <li>
                 <button
                   onClick={() => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' })}
