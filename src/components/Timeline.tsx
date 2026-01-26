@@ -69,7 +69,7 @@ export const Timeline: React.FC = () => {
         'Conducted systematic code reviews per sprint focusing on React performance optimization and clean code practices enhancing application speed 30%',
         'Participated in daily agile ceremonies, planning sessions, and cross-functional collaboration with Product Managers and Designers'
       ],
-      themes: ['React', 'TypeScript', 'JavaScript', 'Sustainable Softwares']
+      themes: ['React', 'TypeScript', 'JavaScript', 'Lifecycle Management']
     },
     {
       id: 'tatvasoft',

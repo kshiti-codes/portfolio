@@ -56,7 +56,7 @@ export const NeuralNetworkBackground: React.FC = () => {
         // Draw particle
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(44, 95, 119, 0.3)';
+        ctx.fillStyle = 'rgba(5, 69, 84, 0.3)';
         ctx.fill();
       });
 

@@ -42,7 +42,7 @@ export default function App() {
         <Skills />
         <Timeline />
         <Projects />
-        {/* <Certifications /> */}
+        <Certifications />
         {/* <ResearchBlog /> */}
         <Contact />
       </main>

@@ -22,67 +22,137 @@ export const Certifications: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
 
   const certificates: Certificate[] = [
-    {
-      id: 1,
-      title: 'AWS Certified Solutions Architect',
-      issuer: 'Amazon Web Services',
-      date: 'June 2024',
-      image: './images/certificates/aws-cert.png',
-      credentialUrl: '#',
-      skills: ['Cloud Architecture', 'AWS', 'DevOps'],
-      description: 'Demonstrated expertise in designing distributed systems on AWS, including compute, networking, storage, and database AWS technologies.'
-    },
-    {
-      id: 2,
-      title: 'React - The Complete Guide',
-      issuer: 'Udemy',
-      date: 'March 2024',
-      image: './images/certificates/react-cert.png',
-      credentialUrl: '#',
-      skills: ['React', 'Hooks', 'Redux', 'Next.js'],
-      description: 'Comprehensive course covering React fundamentals, hooks, context, Redux, Next.js, and modern best practices for building production-ready applications.'
-    },
-    {
-      id: 3,
-      title: 'Professional Scrum Master I',
-      issuer: 'Scrum.org',
-      date: 'January 2024',
-      image: './images/certificates/scrum-cert.png',
-      credentialUrl: '#',
-      skills: ['Agile', 'Scrum', 'Project Management'],
-      description: 'Validated knowledge of Scrum framework, Scrum Master accountabilities, and how to apply Scrum in real-world scenarios.'
-    },
-    {
-      id: 4,
-      title: 'Advanced CSS and Sass',
-      issuer: 'Udemy',
-      date: 'November 2023',
-      image: './images/certificates/css-cert.png',
-      credentialUrl: '#',
-      skills: ['CSS3', 'Sass', 'Responsive Design', 'Animations'],
-      description: 'Master modern CSS including flexbox, grid, animations, and advanced Sass features for building beautiful, responsive websites.'
-    },
-    {
-      id: 5,
-      title: 'Machine Learning Specialization',
-      issuer: 'Coursera - Stanford',
-      date: 'September 2023',
-      image: './images/certificates/ml-cert.png',
-      credentialUrl: '#',
-      skills: ['Machine Learning', 'Python', 'TensorFlow', 'Neural Networks'],
-      description: 'Comprehensive specialization covering supervised learning, unsupervised learning, neural networks, and practical applications of ML algorithms.'
-    },
-    {
-      id: 6,
-      title: 'GraphQL Fundamentals',
-      issuer: 'Apollo GraphQL',
-      date: 'July 2023',
-      image: './images/certificates/graphql-cert.png',
-      credentialUrl: '#',
-      skills: ['GraphQL', 'Apollo', 'APIs'],
-      description: 'In-depth understanding of GraphQL concepts, schema design, queries, mutations, and integrating GraphQL with modern applications.'
-    }
-  ];
+  {
+    id: 1,
+    title: "UX Design Process: Empathize, Define, and Ideate",
+    issuer: "Google/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/ux_design_process.png",
+    credentialUrl: "your-credential-url",
+    skills: ["User Research", "Empathy Mapping", "Problem Definition", "Ideation", "User-Centered Design"],
+    description: "Beginning phases of UX design including user research, defining problems, and generating creative solutions."
+  },
+  {
+    id: 2,
+    title: "Build Wireframes and Low-Fidelity Prototypes",
+    issuer: "Google/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/build_wireframe.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Wireframing", "Prototyping", "Information Architecture", "User Flows", "Design Tools"],
+    description: "Creating wireframes and low-fidelity prototypes to test and iterate on design concepts."
+  },
+  {
+    id: 3,
+    title: "Foundations of User Experience (UX) Design",
+    issuer: "Google/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/foundation_of_ux.png",
+    credentialUrl: "your-credential-url",
+    skills: ["UX Principles", "Design Thinking", "Accessibility", "User Research", "Usability"],
+    description: "Core principles and practices of user experience design including design thinking and accessibility."
+  },
+  {
+    id: 4,
+    title: "Frontend Developer (React) Certification",
+    issuer: "Your Issuer Name", // Update with actual issuer
+    date: "YYYY-MM",
+    image: "./images/certificates/frontend_developer_react_certificate.png", // Update with actual path
+    credentialUrl: "your-credential-url",
+    skills: ["React", "JavaScript", "TypeScript", "Component Architecture", "State Management", "Hooks"],
+    description: "Comprehensive certification demonstrating proficiency in building modern web applications using React and its ecosystem."
+  },
+  {
+    id: 5,
+    title: "What Is Generative AI?",
+    issuer: "Your Issuer Name",
+    date: "YYYY-MM",
+    image: "./images/certificates/GenAI-1.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Generative AI", "LLMs", "AI Fundamentals", "Machine Learning"],
+    description: "Introduction to generative AI technologies, large language models, and their applications."
+  },
+  {
+    id: 6,
+    title: "Introduction to Prompt Engineering for Generative AI",
+    issuer: "Your Issuer Name",
+    date: "YYYY-MM",
+    image: "./images/certificates/GenAI-2.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Prompt Engineering", "LLM Optimization", "AI Integration", "Prompt Design"],
+    description: "Techniques for crafting effective prompts to optimize generative AI model outputs."
+  },
+  {
+    id: 7,
+    title: "Get Ready for Generative AI",
+    issuer: "Your Issuer Name",
+    date: "YYYY-MM",
+    image: "./images/certificates/GenAI-3.png",
+    credentialUrl: "your-credential-url",
+    skills: ["AI Strategy", "AI Ethics", "AI Tools", "Workflow Integration"],
+    description: "Preparing for the integration of generative AI tools in professional workflows and understanding their implications."
+  },
+  {
+    id: 8,
+    title: "What is Data Science?",
+    issuer: "IBM/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/what_is_ds.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Data Science Fundamentals", "Analytics", "Problem Solving"],
+    description: "Introduction to data science concepts, methodology, and real-world applications."
+  },
+  {
+    id: 9,
+    title: "Data Analysis with Python",
+    issuer: "IBM/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/data_analysis.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Python", "Pandas", "NumPy", "Data Analysis", "Data Manipulation"],
+    description: "Practical skills in analyzing and manipulating data using Python libraries including Pandas and NumPy."
+  },
+  {
+    id: 10,
+    title: "Data Science Methodology",
+    issuer: "IBM/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/ds_methodology.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Problem Formulation", "Data Collection", "Model Development", "Evaluation"],
+    description: "Understanding of structured approach to solving data science problems from problem definition to deployment."
+  },
+  {
+    id: 11,
+    title: "Python for Data Science and AI",
+    issuer: "IBM/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/python_ds_ai.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Python", "Data Structures", "APIs", "Web Scraping", "Machine Learning Basics"],
+    description: "Foundation in Python programming for data science and artificial intelligence applications."
+  },
+  {
+    id: 12,
+    title: "Data Visualization with Python",
+    issuer: "IBM/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/data_viz_python.png",
+    credentialUrl: "your-credential-url",
+    skills: ["Matplotlib", "Seaborn", "Plotly", "Data Storytelling", "Visualization Design"],
+    description: "Creating impactful data visualizations using Python libraries to communicate insights effectively."
+  },
+  {
+    id: 13,
+    title: "Databases and SQL for Data Science",
+    issuer: "IBM/Coursera",
+    date: "YYYY-MM",
+    image: "./images/certificates/db_and_sql_for_ds.png",
+    credentialUrl: "your-credential-url",
+    skills: ["SQL", "Database Design", "Queries", "Data Retrieval", "RDBMS"],
+    description: "Proficiency in SQL and relational database concepts for data science applications."
+  },
+];
 
   // Duplicate certificates for seamless infinite scroll
   const duplicatedCertificates = [...certificates, ...certificates, ...certificates];
@@ -160,25 +230,36 @@ export const Certifications: React.FC = () => {
                     <img
                       src={cert.image}
                       alt={cert.title}
-                      className="w-full h-full object-cover"
+                      className="object-cover"
+                      style={{ width: "400px", height: "300px" }}
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="180"%3E%3Crect fill="%23e5e7eb" width="320" height="180"/%3E%3Ctext fill="%236b7280" font-family="sans-serif" font-size="18" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ECertificate%3C/text%3E%3C/svg%3E';
                       }}
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex-1 flex flex-col">
                     <div className="flex items-start gap-2 mb-3">
                       <Award className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
                       <h4 className="line-clamp-2 flex-1">{cert.title}</h4>
                     </div>
                     <p className="text-sm text-primary mb-2">{cert.issuer}</p>
                     <p className="text-xs text-muted-foreground mb-3">{cert.date}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {cert.skills.slice(0, 3).map(skill => (
-                        <Badge key={skill} variant="secondary" className="bg-secondary/20 text-primary text-xs">
+                    <div className="flex flex-wrap gap-2 min-h-[2rem]">
+                      {cert.skills.slice(0, 2).map(skill => (
+                        <Badge 
+                          key={skill} 
+                          variant="secondary" 
+                          className="bg-secondary/20 text-primary text-xs whitespace-nowrap max-w-full truncate"
+                        >
                           {skill}
                         </Badge>
                       ))}
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-secondary/20 text-primary text-xs whitespace-nowrap max-w-full truncate"
+                      >
+                        + {cert.skills.length - 2} more
+                      </Badge>
                     </div>
                   </div>
                 </Card>
@@ -201,8 +282,9 @@ export const Certifications: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-5 mx-2 mt-10 mb-10"
               onClick={() => setSelectedCertificate(null)}
+              style={{ marginTop: '2rem'}}
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -226,7 +308,7 @@ export const Certifications: React.FC = () => {
                 </div>
 
                 {/* Content */}
-                <div className="p-4 space-y-4">
+                <div className="p-6 space-y-5">
                   {/* Certificate Image */}
                   <div className="aspect-video w-full overflow-hidden rounded-md bg-gradient-to-br from-primary/10 to-secondary/10">
                     <img
@@ -240,7 +322,7 @@ export const Certifications: React.FC = () => {
                   </div>
 
                   {/* Title & Issuer */}
-                  <div>
+                  <div className="">
                     <h4 className="text-lg font-semibold text-primary mb-1">{selectedCertificate.title}</h4>
                     <p className="text-sm text-foreground/80 mb-1">{selectedCertificate.issuer}</p>
                     <p className="text-xs text-muted-foreground">{selectedCertificate.date}</p>
@@ -263,20 +345,6 @@ export const Certifications: React.FC = () => {
                       ))}
                     </div>
                   </div>
-
-                  {/* View Credential Button */}
-                  {selectedCertificate.credentialUrl && (
-                    <Button 
-                      className="bg-accent hover:bg-accent/90 w-full" 
-                      size="sm" 
-                      asChild
-                    >
-                      <a href={selectedCertificate.credentialUrl} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-3.5 h-3.5 mr-2" />
-                        View Credential
-                      </a>
-                    </Button>
-                  )}
                 </div>
               </motion.div>
             </motion.div>
