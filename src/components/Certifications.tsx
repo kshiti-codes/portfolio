@@ -20,13 +20,14 @@ export const Certifications: React.FC = () => {
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const scrollPositionRef = useRef(0);
 
   const certificates: Certificate[] = [
   {
     id: 1,
     title: "UX Design Process: Empathize, Define, and Ideate",
-    issuer: "Google/Coursera",
-    date: "YYYY-MM",
+    issuer: "Google",
+    date: "2020-11",
     image: "./images/certificates/ux_design_process.png",
     credentialUrl: "your-credential-url",
     skills: ["User Research", "Empathy Mapping", "Problem Definition", "Ideation", "User-Centered Design"],
@@ -35,8 +36,8 @@ export const Certifications: React.FC = () => {
   {
     id: 2,
     title: "Build Wireframes and Low-Fidelity Prototypes",
-    issuer: "Google/Coursera",
-    date: "YYYY-MM",
+    issuer: "Google",
+    date: "2020-12",
     image: "./images/certificates/build_wireframe.png",
     credentialUrl: "your-credential-url",
     skills: ["Wireframing", "Prototyping", "Information Architecture", "User Flows", "Design Tools"],
@@ -45,8 +46,8 @@ export const Certifications: React.FC = () => {
   {
     id: 3,
     title: "Foundations of User Experience (UX) Design",
-    issuer: "Google/Coursera",
-    date: "YYYY-MM",
+    issuer: "Google",
+    date: "2022-11",
     image: "./images/certificates/foundation_of_ux.png",
     credentialUrl: "your-credential-url",
     skills: ["UX Principles", "Design Thinking", "Accessibility", "User Research", "Usability"],
@@ -55,9 +56,9 @@ export const Certifications: React.FC = () => {
   {
     id: 4,
     title: "Frontend Developer (React) Certification",
-    issuer: "Your Issuer Name", // Update with actual issuer
-    date: "YYYY-MM",
-    image: "./images/certificates/frontend_developer_react_certificate.png", // Update with actual path
+    issuer: "Hackerrank", 
+    date: "2024-07",
+    image: "./images/certificates/frontend_developer_react_certificate.png", 
     credentialUrl: "your-credential-url",
     skills: ["React", "JavaScript", "TypeScript", "Component Architecture", "State Management", "Hooks"],
     description: "Comprehensive certification demonstrating proficiency in building modern web applications using React and its ecosystem."
@@ -65,8 +66,8 @@ export const Certifications: React.FC = () => {
   {
     id: 5,
     title: "What Is Generative AI?",
-    issuer: "Your Issuer Name",
-    date: "YYYY-MM",
+    issuer: "Linkedin Learning",
+    date: "2023-08",
     image: "./images/certificates/GenAI-1.png",
     credentialUrl: "your-credential-url",
     skills: ["Generative AI", "LLMs", "AI Fundamentals", "Machine Learning"],
@@ -75,8 +76,8 @@ export const Certifications: React.FC = () => {
   {
     id: 6,
     title: "Introduction to Prompt Engineering for Generative AI",
-    issuer: "Your Issuer Name",
-    date: "YYYY-MM",
+    issuer: "Linkedin Learning",
+    date: "2023-08",
     image: "./images/certificates/GenAI-2.png",
     credentialUrl: "your-credential-url",
     skills: ["Prompt Engineering", "LLM Optimization", "AI Integration", "Prompt Design"],
@@ -85,8 +86,8 @@ export const Certifications: React.FC = () => {
   {
     id: 7,
     title: "Get Ready for Generative AI",
-    issuer: "Your Issuer Name",
-    date: "YYYY-MM",
+    issuer: "Linkedin Learning",
+    date: "2023-08",
     image: "./images/certificates/GenAI-3.png",
     credentialUrl: "your-credential-url",
     skills: ["AI Strategy", "AI Ethics", "AI Tools", "Workflow Integration"],
@@ -95,8 +96,8 @@ export const Certifications: React.FC = () => {
   {
     id: 8,
     title: "What is Data Science?",
-    issuer: "IBM/Coursera",
-    date: "YYYY-MM",
+    issuer: "IBM",
+    date: "2019-10",
     image: "./images/certificates/what_is_ds.png",
     credentialUrl: "your-credential-url",
     skills: ["Data Science Fundamentals", "Analytics", "Problem Solving"],
@@ -105,8 +106,8 @@ export const Certifications: React.FC = () => {
   {
     id: 9,
     title: "Data Analysis with Python",
-    issuer: "IBM/Coursera",
-    date: "YYYY-MM",
+    issuer: "IBM",
+    date: "2020-01",
     image: "./images/certificates/data_analysis.png",
     credentialUrl: "your-credential-url",
     skills: ["Python", "Pandas", "NumPy", "Data Analysis", "Data Manipulation"],
@@ -115,8 +116,8 @@ export const Certifications: React.FC = () => {
   {
     id: 10,
     title: "Data Science Methodology",
-    issuer: "IBM/Coursera",
-    date: "YYYY-MM",
+    issuer: "IBM",
+    date: "2019-11",
     image: "./images/certificates/ds_methodology.png",
     credentialUrl: "your-credential-url",
     skills: ["Problem Formulation", "Data Collection", "Model Development", "Evaluation"],
@@ -125,8 +126,8 @@ export const Certifications: React.FC = () => {
   {
     id: 11,
     title: "Python for Data Science and AI",
-    issuer: "IBM/Coursera",
-    date: "YYYY-MM",
+    issuer: "IBM",
+    date: "2019-11",
     image: "./images/certificates/python_ds_ai.png",
     credentialUrl: "your-credential-url",
     skills: ["Python", "Data Structures", "APIs", "Web Scraping", "Machine Learning Basics"],
@@ -135,8 +136,8 @@ export const Certifications: React.FC = () => {
   {
     id: 12,
     title: "Data Visualization with Python",
-    issuer: "IBM/Coursera",
-    date: "YYYY-MM",
+    issuer: "IBM",
+    date: "2020-01",
     image: "./images/certificates/data_viz_python.png",
     credentialUrl: "your-credential-url",
     skills: ["Matplotlib", "Seaborn", "Plotly", "Data Storytelling", "Visualization Design"],
@@ -145,8 +146,8 @@ export const Certifications: React.FC = () => {
   {
     id: 13,
     title: "Databases and SQL for Data Science",
-    issuer: "IBM/Coursera",
-    date: "YYYY-MM",
+    issuer: "IBM",
+    date: "2020-01",
     image: "./images/certificates/db_and_sql_for_ds.png",
     credentialUrl: "your-credential-url",
     skills: ["SQL", "Database Design", "Queries", "Data Retrieval", "RDBMS"],
@@ -166,17 +167,17 @@ export const Certifications: React.FC = () => {
     
     const scroll = () => {
       if (!isPaused && scrollContainer) {
-        scrollPosition += scrollSpeed;
+        scrollPositionRef.current += scrollSpeed;
         
         // Get the width of one set of certificates
         const singleSetWidth = scrollContainer.scrollWidth / 3;
         
         // Reset position when we've scrolled through one complete set
         if (scrollPosition >= singleSetWidth) {
-          scrollPosition = 0;
+          scrollPositionRef.current = 0;
           scrollContainer.scrollLeft = 0;
         } else {
-          scrollContainer.scrollLeft = scrollPosition;
+          scrollContainer.scrollLeft = scrollPositionRef.current;
         }
       }
     };
