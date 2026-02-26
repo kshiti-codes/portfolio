@@ -30,9 +30,9 @@ export const About: React.FC = () => {
     }
   ];
 
-  const links = [
-    { label: 'Download CV', icon: ExternalLink, href: './pdf/kshitipatel.pdf' },
-  ];
+  // const links = [
+  //   { label: 'Download CV', icon: ExternalLink, href: './pdf/kshitipatel.pdf' },
+  // ];
 
   return (
     <section id="about" className="py-20 relative z-10">
@@ -58,7 +58,7 @@ export const About: React.FC = () => {
         >
           <Card className="p-8 backdrop-blur-sm bg-card/80">
             <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-              I'm a frontend engineer based in Hamburg, Germany, who's obsessed with building web experiences that don't just work, but feel effortless.
+              I'm a software engineer based in Hamburg, Germany, who's obsessed with building web experiences that don't just work, but feel effortless.
             </p>
             <p className="text-lg text-foreground/90 leading-relaxed mb-6">
             Over the past 6 years, I've evolved from junior developer to someone who architects enterprise-scale solutions serving 176+ organizations globally. I've improved application performance by 60%, pushed test coverage to 90%+, and optimized Core Web Vitals until they're consistently green. But here's what really drives me: the challenge of making complexity feel effortless. Whether it's Redux state management for real-time inventory systems or implementing server-side rendering for e-commerce platforms, I thrive on technical challenges that directly impact user experience.  
@@ -99,7 +99,7 @@ export const About: React.FC = () => {
         </div>
 
         {/* Quick Links */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
@@ -116,7 +116,7 @@ export const About: React.FC = () => {
               <link.icon className="w-4 h-4" />
             </a>
           ))}
-        </motion.div>
+        </motion.div> */}
 
         {/* Ask Me About Section */}
         <motion.div

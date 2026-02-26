@@ -28,7 +28,7 @@ export const Hero: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-3 lg:mb-6"
             >
-              <span className="text-primary sm:text-3xl">Frontend Developer</span>
+              <span className="text-primary sm:text-3xl">Software Engineer</span>
             </motion.div>
 
             <motion.h1
