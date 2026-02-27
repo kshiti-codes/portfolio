@@ -139,7 +139,7 @@ export const About: React.FC = () => {
         >
           <div className="inline-block px-6 py-3 bg-accent/10 border-2 border-accent/30 rounded-lg">
             <p className="text-foreground/90">
-              <span className="text-accent">Currently seeking Frontend Developer positions</span> in 
+              <span className="text-accent">Currently seeking Software Engineer positions</span> in 
               dynamic teams where I can contribute my expertise in React and TypeScript to build exceptional web applications.
             </p>
           </div>

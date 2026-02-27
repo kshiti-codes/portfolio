@@ -129,7 +129,7 @@ export const Contact: React.FC = () => {
           <h2 className="text-4xl sm:text-5xl text-primary mb-4">Get In Touch</h2>
           <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full mb-6" />
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            I'm always interested in new collaborations, freelance opportunities, and engaging discussions about frontend development
+            I'm always interested in new collaborations, freelance opportunities, and engaging discussions about Software development
           </p>
         </motion.div>
 

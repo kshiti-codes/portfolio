@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="text-2xl mb-4">Kshiti Patel</h3>
             <p className="text-foreground/70 mb-4">
-              Frontend Developer specializing in React & TypeScript. Passionate about building high-performance, scalable web applications.
+              Software Engineer specializing in React & TypeScript. Passionate about building high-performance, scalable web applications.
             </p>
             <div className="flex gap-4">
               <a
@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
           <Card className="p-8 bg-card/80 backdrop-blur-sm" style={{ margin: -16 }}>
               <h3 className="text-2xl text-primary mb-4">Seeking Opportunities</h3>
               <p className="text-foreground/80 mb-6">
-                I am actively seeking freelance and full-time frontend development opportunities. 
+                I am actively seeking freelance and full-time software development opportunities. 
                 I would be delighted to discuss potential projects and share my technical expertise in React and TypeScript.
               </p>
               <div className="flex flex-wrap gap-2">

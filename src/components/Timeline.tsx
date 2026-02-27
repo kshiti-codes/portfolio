@@ -21,10 +21,10 @@ export const Timeline: React.FC = () => {
 
   const timelineData: TimelineItem[] = [
     {
-      id: 'freelance-frontend',
+      id: 'freelance',
       period: 'Nov 2024 - Present',
-      title: 'Frontend Engineer',
-      institution: 'Freelance',
+      title: 'Software Engineer',
+      institution: 'People of peony | Freelance',
       description: 'Developing high-quality, scalable frontend features for e-commerce Web Shops, focusing on performance optimization and modern React architecture.',
       achievements: [
         'Develop scalable frontend features for e-commerce Web Shops using React and TypeScript',
