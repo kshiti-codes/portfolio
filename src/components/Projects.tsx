@@ -26,6 +26,17 @@ export const Projects: React.FC = () => {
 
   const projects: Project[] = [
     {
+      id: 0,
+      title: 'Delay Action — AI Flight Delay Copilot',
+      description: 'Delay Action is a real-time flight disruption tool I built with React, TypeScript, and Vite, hooked up to the Lufthansa Open API to pull live flight schedules from hubs like Frankfurt and Munich. Operations teams can pick a weather scenario (anything from a thunderstorm to freezing rain) and get an AI-generated response plan on the spot, covering cost savings, prioritized actions, and passenger care broken down by VIP, connecting, and standard travelers. The idea is simple: act before the chaos hits. Proactive handling can cut operational costs by up to 65% compared to reacting after the fact. Built and submitted at the Hamburg Hackathon: Innovate the Skies & Beyond.',
+      image: './images/projects/delayaction.gif',
+      category: 'AI & Machine Learning',
+      technologies: ['React', 'TypeScript', 'Vite', 'Lufthansa Open API', 'Gemini API'],
+      link: 'https://delay-action.vercel.app/',
+      github: 'https://github.com/kshiti-codes/DelayAction',
+      featured: true
+    },
+    {
       id: 1,
       title: 'The Master Magical Key - Digital Book',
       description: 'Architected full-scale digital book marketplace processing 1500+ transactions with 98% success rate, featuring subscription management, interactive reading interface, and comprehensive admin analytics. Managed 1000+ users, 50+ coaches, and 300+ booking sessions with integrated PayPal payments and email campaigns.',
