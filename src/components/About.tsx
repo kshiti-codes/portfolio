@@ -58,13 +58,13 @@ export const About: React.FC = () => {
         >
           <Card className="p-8 backdrop-blur-sm bg-card/80">
             <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-              I'm a software engineer based in Hamburg, Germany, who's obsessed with building web experiences that don't just work, but feel effortless.
+              I'm a Senior Software Engineer based in Hamburg, Germany, specialising in React and TypeScript, obsessed with building web experiences that don't just work, but feel effortless.  
             </p>
             <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-            Over the past 6 years, I've evolved from junior developer to someone who architects enterprise-scale solutions serving 176+ organizations globally. I've improved application performance by 60%, pushed test coverage to 90%+, and optimized Core Web Vitals until they're consistently green. But here's what really drives me: the challenge of making complexity feel effortless. Whether it's Redux state management for real-time inventory systems or implementing server-side rendering for e-commerce platforms, I thrive on technical challenges that directly impact user experience.  
+              Over the past 6+ years, I've evolved from junior developer to someone who architects enterprise-scale solutions serving 176+ organisations globally. I've improved application performance by 35%, reduced load times by 2.5 seconds, and pushed test coverage to 90%+. But here's what really drives me: the challenge of making complexity feel effortless. Whether it's Redux state management, full-stack e-commerce platforms handling 1,500+ real transactions, or deploying containerised apps via CI/CD pipelines, I thrive on technical challenges that directly impact user experience.
             </p>
             <p className="text-lg text-foreground/90 leading-relaxed">
-              I work best with autonomy and ownership – give me a problem, and I'll take it from conception to deployment. Currently, I'm an independent consultant building high-performance solutions for e-commerce clients, staying obsessed with accessibility standards, modern architecture patterns, and the endless pursuit of faster, better, cleaner code. Always open to interesting projects and conversations about frontend engineering.
+              I work best with autonomy and full ownership, give me a problem and I'll take it from architecture to production. Most recently, I've been building scalable e-commerce solutions at People of Peony, staying obsessed with accessibility standards, modern architecture patterns, and the endless pursuit of faster, better, cleaner code. Driven by work that creates tangible real-world impact, particularly in the clean energy transition. Always open to interesting projects and conversations about frontend engineering.
             </p>
           </Card>
         </motion.div>

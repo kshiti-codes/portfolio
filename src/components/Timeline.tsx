@@ -32,7 +32,7 @@ export const Timeline: React.FC = () => {
         'Integrate REST APIs with Redux, Zustand, React Query for complex state management',
         'Manage shopping carts and real-time inventory synchronization systems'
       ],
-      themes: ['React', 'TypeScript', 'JavaScript', 'Redux', 'E-commerce']
+      themes: ['React', 'TypeScript', 'JavaScript', 'Redux', 'Next.js', 'Tailwind CSS', 'E-commerce']
     },
     {
       id: 'tcs-moodys',
@@ -52,7 +52,7 @@ export const Timeline: React.FC = () => {
         'Established CI/CD pipelines for continuous deployment',
         'Developed responsive components with WCAG compliance for enterprise accessibility standards'
       ],
-      themes: ['React', 'TypeScript', 'JavaScript', 'Redux', 'Financial Tech']
+      themes: ['React', 'TypeScript', 'JavaScript', 'Redux', 'Jest', 'Financial Tech']
     },
     {
       id: 'tcs-ibm',
@@ -69,7 +69,7 @@ export const Timeline: React.FC = () => {
         'Conducted systematic code reviews per sprint focusing on React performance optimization and clean code practices enhancing application speed 30%',
         'Participated in daily agile ceremonies, planning sessions, and cross-functional collaboration with Product Managers and Designers'
       ],
-      themes: ['React', 'TypeScript', 'JavaScript', 'Lifecycle Management']
+      themes: ['React', 'TypeScript', 'JavaScript', 'Jest', 'GIT', 'Lifecycle Management']
     },
     {
       id: 'tatvasoft',
@@ -86,7 +86,7 @@ export const Timeline: React.FC = () => {
         'Ensured WCAG compliance and accessibility (a11y) standards',
         'Demonstrated high autonomy solving complex technical problems'
       ],
-      themes: ['React', 'TypeScript', 'JavaScript', 'E-commerce']
+      themes: ['React', 'TypeScript', 'JavaScript', 'Jest', 'CI/CD', 'E-commerce']
     },
     {
       id: 'bisag',
@@ -100,7 +100,7 @@ export const Timeline: React.FC = () => {
         'Built remote sensing platforms for agriculture, disaster management, and infrastructure monitoring supporting Digital India mission',
         'Implemented CI/CD pipelines and performance optimization for geospatial applications, collaborating with MeitY in agile environment'
       ],
-      themes: ['Vue.js', 'TypeScript', 'GIS', 'Geospatial']
+      themes: ['Vue.js', 'TypeScript', 'GIS', 'Geospatial', 'MapLibre']
     },
     {
       id: 'webearl',
@@ -114,7 +114,7 @@ export const Timeline: React.FC = () => {
         'Implemented state management and API integration for dynamic user interfaces',
         'Enhanced UX/UI implementation skills with modern CSS-in-JS approaches'
       ],
-      themes: ['React', 'JavaScript']
+      themes: ['React', 'JavaScript', 'CSS', 'Frontend Development']
     },
     {
       id: 'psvm',
@@ -129,7 +129,7 @@ export const Timeline: React.FC = () => {
         'Created interactive web applications with DOM manipulation and JavaScript ES6 features',
         'Established understanding of web performance optimization and cross-browser compatibility'
       ],
-      themes: ['JavaScript']
+      themes: ['JavaScript', 'HTML', 'CSS', 'Bootstrap', 'Web Development']
     },
   ];
 
@@ -223,8 +223,6 @@ export const Timeline: React.FC = () => {
                       </div>
                     </div>
 
-                    <p className="text-foreground/80 mb-4">{item.description}</p>
-
                     <div className="flex flex-wrap gap-2 mb-4">
                       {item.themes.map(theme => (
                         <Badge key={theme} variant="secondary" className="bg-secondary/20 text-primary">
@@ -233,33 +231,6 @@ export const Timeline: React.FC = () => {
                       ))}
                     </div>
 
-                    {/* Expandable achievements */}
-                    <button
-                      onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
-                      className="flex items-center gap-2 text-primary hover:text-secondary transition-colors"
-                    >
-                      <span>Key Achievements</span>
-                      {expandedId === item.id ? (
-                        <ChevronUp className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </button>
-
-                    {expandedId === item.id && (
-                      <motion.ul
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-4 space-y-2 pl-4"
-                      >
-                        {item.achievements.map((achievement, i) => (
-                          <li key={i} className="text-foreground/80 list-disc">
-                            {achievement}
-                          </li>
-                        ))}
-                      </motion.ul>
-                    )}
                   </Card>
                 </div>
               </motion.div>

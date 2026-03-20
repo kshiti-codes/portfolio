@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
           <Card className="p-8 bg-card/80 backdrop-blur-sm" style={{ margin: -16 }}>
               <h3 className="text-2xl text-primary mb-4">Seeking Opportunities</h3>
               <p className="text-foreground/80 mb-6">
-                I am actively seeking freelance and full-time software development opportunities. 
+                I am actively seeking full-time software development opportunities. 
                 I would be delighted to discuss potential projects and share my technical expertise in React and TypeScript.
               </p>
               <div className="flex flex-wrap gap-2">
