@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestJS — Complete Terminology Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0e;
+    --surface: #0c1419;
+    --surface2: #111c24;
+    --border: #1a2d3a;
+    --accent: #e8424d;
+    --accent2: #00d4aa;
+    --accent3: #f59e0b;
+    --text: #c8d8e4;
+    --text-dim: #5a7a8a;
+    --text-bright: #eef4f8;
+    --nest-red: #e8424d;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,66,77,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,66,77,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 60px 0 50px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 60px;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .nest-logo {
+    width: 52px; height: 52px;
+    background: var(--nest-red);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(232,66,77,0.4); }
+    50% { box-shadow: 0 0 0 12px rgba(232,66,77,0); }
+  }
+
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--text-bright);
+    letter-spacing: -1px;
+  }
+
+  h1 span { color: var(--nest-red); }
+
+  .subtitle {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* NAV PILLS */
+  .nav-pills {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 30px;
+  }
+
+  .pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 70px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .section-title {
+    font-family: var(--sans);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.3px;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CARDS GRID */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .card:hover {
+    border-color: rgba(232,66,77,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    background: rgba(232,66,77,0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .card-tag.green { color: var(--accent2); background: rgba(0,212,170,0.1); }
+  .card-tag.amber { color: var(--accent3); background: rgba(245,158,11,0.1); }
+  .card-tag.blue { color: #60a5fa; background: rgba(96,165,250,0.1); }
+
+  .card h3 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .code-inline {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent2);
+  }
+
+  /* LIFECYCLE FLOW */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .flow-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    position: relative;
+  }
+
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 48px;
+  }
+
+  .flow-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    z-index: 1;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .flow-item:hover .flow-circle {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 20px rgba(232,66,77,0.3);
+  }
+
+  .flow-line {
+    width: 2px;
+    flex: 1;
+    min-height: 30px;
+    background: linear-gradient(to bottom, var(--border), transparent);
+    margin: 0 auto;
+  }
+
+  .flow-content {
+    flex: 1;
+    padding: 12px 16px 28px;
+  }
+
+  .flow-content h4 {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .flow-content p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* REQUEST PIPELINE */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+  }
+
+  .pipe-row {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .pipe-label {
+    width: 120px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .pipe-box {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pipe-box .desc {
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.4);
+    margin-left: auto;
+  }
+
+  .pipe-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0;
+  }
+
+  .pipe-arrow svg { color: var(--text-dim); }
+
+  /* DI DIAGRAM */
+  .di-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 30px;
+  }
+
+  .di-center {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .di-box {
+    display: inline-block;
+    background: rgba(232,66,77,0.1);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 28px;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .di-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .di-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+  }
+
+  .di-item::before {
+    content: '↑';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  .di-item h5 {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent2);
+    margin-bottom: 4px;
+  }
+
+  .di-item p {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  /* MODULE TREE */
+  .module-tree {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    line-height: 2;
+  }
+
+  .tree-root { color: var(--accent); font-weight: 700; }
+  .tree-child { color: var(--accent2); }
+  .tree-leaf { color: var(--text-dim); }
+  .tree-decorator { color: var(--accent3); }
+  .tree-comment { color: #3d5a68; font-style: italic; }
+
+  /* SCOPE TABLE */
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(26,45,58,0.6);
+    color: var(--text);
+    font-size: 0.8rem;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td:first-child { color: var(--accent2); font-weight: 600; }
+
+  /* COMPARISON */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .compare-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .compare-box h4 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .compare-box li {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .compare-box li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #080f14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin-top: 12px;
+  }
+
+  .kw { color: #c586c0; }
+  .fn { color: #dcdcaa; }
+  .dec { color: var(--accent3); }
+  .str { color: #ce9178; }
+  .cls { color: #4ec9b0; }
+  .cm { color: #3d5a68; font-style: italic; }
+  .num { color: #b5cea8; }
+
+  /* FOOTER */
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin: 2px;
+  }
+
+  .badge-red { background: rgba(232,66,77,0.12); color: var(--accent); border: 1px solid rgba(232,66,77,0.25); }
+  .badge-green { background: rgba(0,212,170,0.1); color: var(--accent2); border: 1px solid rgba(0,212,170,0.2); }
+  .badge-amber { background: rgba(245,158,11,0.1); color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
+  .badge-blue { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+
+  .highlight-box {
+    background: rgba(232,66,77,0.05);
+    border: 1px solid rgba(232,66,77,0.15);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .compare { grid-template-columns: 1fr; }
+    .di-grid { grid-template-columns: 1fr; }
+    .pipe-label { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-row">
+      <div class="nest-logo">N</div>
+      <div>
+        <h1><span>NestJS</span> Terminology</h1>
+        <p class="subtitle">Complete Reference Guide · v10+</p>
+      </div>
+    </div>
+    <nav class="nav-pills">
+      <a class="pill" href="#building-blocks">Building Blocks</a>
+      <a class="pill" href="#di">Dependency Injection</a>
+      <a class="pill" href="#pipeline">Request Pipeline</a>
+      <a class="pill" href="#modules">Modules</a>
+      <a class="pill" href="#dto">DTOs & Validation</a>
+      <a class="pill" href="#lifecycle">Lifecycle</a>
+      <a class="pill" href="#providers">Providers</a>
+      <a class="pill" href="#advanced">Advanced</a>
+    </nav>
+  </header>
+
+  <!-- ─── 1. BUILDING BLOCKS ─── -->
+  <section class="section" id="building-blocks">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Core Building Blocks</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <span class="card-tag">@Module()</span>
+        <h3>Module</h3>
+        <p>Root unit of organization. Every NestJS app has at least one — the <span class="code-inline">AppModule</span>. Declares controllers, providers, imports, and exports.</p>
+        <div class="highlight-box" style="margin-top:12px; font-size:0.76rem;">Think of it as a <strong>feature folder</strong> — groups related things (controllers + services + providers) into a cohesive unit.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">@Controller()</span>
+        <h3>Controller</h3>
+        <p>Handles incoming HTTP requests and returns responses. Defines routes using decorators like <span class="code-inline">@Get()</span>, <span class="code-inline">@Post()</span>. Does NOT contain business logic.</p>
+        <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
+          <span class="badge badge-green">@Get</span>
+          <span class="badge badge-green">@Post</span>
+          <span class="badge badge-green">@Put</span>
+          <span class="badge badge-green">@Delete</span>
+          <span class="badge badge-green">@Patch</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag green">@Injectable()</span>
+        <h3>Provider / Service</h3>
+        <p>Any class decorated with <span class="code-inline">@Injectable()</span>. Services hold business logic. Providers can be services, repositories, factories, helpers, etc.</p>
+        <div class="highlight-box" style="margin-top:12px; font-size:0.76rem;">Controllers ask "what?" — Services decide "how?"</div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag amber">@UseGuards()</span>
+        <h3>Guard</h3>
+        <p>Determines whether a request should proceed. Used for <strong>authentication & authorization</strong>. Returns <span class="code-inline">true</span> to allow, <span class="code-inline">false</span> to block. Runs AFTER middleware, BEFORE interceptors.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag amber">@UseInterceptors()</span>
+        <h3>Interceptor</h3>
+        <p>Wraps around route handler execution. Can transform request/response, add extra logic, or handle errors. Runs BEFORE and AFTER the handler (like a sandwich).</p>
+        <div class="highlight-box" style="margin-top:12px; font-size:0.76rem;">Use for: logging, caching, response mapping, timing.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Middleware</span>
+        <h3>Middleware</h3>
+        <p>Runs BEFORE the route handler. Has access to <span class="code-inline">req</span>, <span class="code-inline">res</span>, and <span class="code-inline">next()</span>. Similar to Express middleware. Used for logging, CORS, body parsing.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag blue">@UsePipes()</span>
+        <h3>Pipe</h3>
+        <p>Transforms and validates input data before it reaches the controller handler. Two uses: <strong>transformation</strong> (string → number) and <strong>validation</strong> (throw if invalid).</p>
+        <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;">
+          <span class="badge badge-blue">ParseIntPipe</span>
+          <span class="badge badge-blue">ValidationPipe</span>
+          <span class="badge badge-blue">ParseUUIDPipe</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">@UseFilters()</span>
+        <h3>Exception Filter</h3>
+        <p>Catches exceptions thrown anywhere in the application and formats the error response. Default: <span class="code-inline">HttpExceptionFilter</span>. You can create custom ones.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag green">Decorator</span>
+        <h3>Decorator</h3>
+        <p>TypeScript metadata annotations that define behavior. NestJS is built on them: <span class="code-inline">@Module</span>, <span class="code-inline">@Controller</span>, <span class="code-inline">@Get</span>, <span class="code-inline">@Body</span>, etc. You can create custom decorators.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 2. REQUEST PIPELINE ─── -->
+  <section class="section" id="pipeline">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Request Lifecycle Pipeline</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div style="margin-bottom: 16px; font-size: 0.8rem; color: var(--text-dim); font-family: var(--mono);">
+      incoming request → response (each layer can short-circuit)
+    </div>
+
+    <div class="pipeline">
+
+      <div class="pipe-row">
+        <div class="pipe-label">INCOMING</div>
+        <div class="pipe-box" style="background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); color: #60a5fa;">
+          🌐 HTTP Request
+          <span class="desc">Client sends request</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">1st</div>
+        <div class="pipe-box" style="background: rgba(100,116,139,0.08); border: 1px solid rgba(100,116,139,0.2); color: #94a3b8;">
+          🔧 Middleware
+          <span class="desc">next() must be called to continue</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">2nd</div>
+        <div class="pipe-box" style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: var(--accent3);">
+          🛡️ Guard
+          <span class="desc">returns true/false — blocks unauthorized requests</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">3rd</div>
+        <div class="pipe-box" style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); color: #a78bfa;">
+          🔄 Interceptor (before)
+          <span class="desc">wraps execution — entry point</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">4th</div>
+        <div class="pipe-box" style="background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); color: #60a5fa;">
+          🔵 Pipe
+          <span class="desc">validates & transforms route params/body</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">HANDLER</div>
+        <div class="pipe-box" style="background: rgba(232,66,77,0.12); border: 2px solid rgba(232,66,77,0.4); color: var(--accent); font-size: 0.9rem;">
+          ⚡ Route Handler (Controller Method)
+          <span class="desc">your actual code</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">return</div>
+        <div class="pipe-box" style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); color: #a78bfa;">
+          🔄 Interceptor (after)
+          <span class="desc">transforms response — exit point</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">on error</div>
+        <div class="pipe-box" style="background: rgba(239,68,68,0.06); border: 1px dashed rgba(239,68,68,0.3); color: #f87171;">
+          🚫 Exception Filter
+          <span class="desc">catches any unhandled exceptions</span>
+        </div>
+      </div>
+
+      <div class="pipe-arrow"><svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M12 1L12 15M12 15L6 9M12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="pipe-row">
+        <div class="pipe-label">OUTGOING</div>
+        <div class="pipe-box" style="background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2); color: var(--accent2);">
+          ✅ HTTP Response
+          <span class="desc">sent back to client</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── 3. DEPENDENCY INJECTION ─── -->
+  <section class="section" id="di">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Dependency Injection (DI)</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="di-diagram">
+      <div class="di-center">
+        <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">IoC Container manages all instances</div>
+        <div class="di-box">NestJS IoC Container</div>
+        <div style="margin-top: 16px; width: 2px; height: 30px; background: var(--border); margin-left: auto; margin-right: auto;"></div>
+        <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">injects into ↓</div>
+      </div>
+      <div class="di-grid">
+        <div class="di-item">
+          <h5>@Injectable() Service</h5>
+          <p>Business logic — injected into controllers or other services</p>
+        </div>
+        <div class="di-item">
+          <h5>@Controller()</h5>
+          <p>Receives services via constructor injection automatically</p>
+        </div>
+        <div class="di-item">
+          <h5>Custom Providers</h5>
+          <p>useClass / useValue / useFactory / useExisting</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top: 20px;">
+<span class="cm">// 1. Mark as injectable</span>
+<br><span class="dec">@Injectable</span>()
+<br><span class="kw">class</span> <span class="cls">OrderService</span> {
+<br>  <span class="fn">createOrder</span>() { <span class="cm">/* ... */</span> }
+<br>}
+<br>
+<br><span class="cm">// 2. Constructor injection — NestJS resolves automatically</span>
+<br><span class="dec">@Controller</span>(<span class="str">'orders'</span>)
+<br><span class="kw">class</span> <span class="cls">OrderController</span> {
+<br>  <span class="kw">constructor</span>(<span class="kw">private</span> <span class="kw">readonly</span> orderService: <span class="cls">OrderService</span>) {}
+<br>
+<br>  <span class="dec">@Post</span>()
+<br>  <span class="fn">create</span>() { <span class="kw">return</span> <span class="kw">this</span>.orderService.<span class="fn">createOrder</span>(); }
+<br>}
+    </div>
+
+    <div class="cards" style="margin-top: 20px;">
+      <div class="card">
+        <span class="card-tag">Scope: DEFAULT</span>
+        <h3>Singleton Scope</h3>
+        <p>One instance shared across the entire app. Created once, reused everywhere. <strong>Most performant</strong> — this is the default.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag amber">Scope: REQUEST</span>
+        <h3>Request Scope</h3>
+        <p>New instance created for <strong>each incoming request</strong>. Useful when you need request-specific data (e.g., current user). Has performance overhead.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag blue">Scope: TRANSIENT</span>
+        <h3>Transient Scope</h3>
+        <p>New instance created for <strong>each consumer</strong> that injects it. Not shared at all.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top: 20px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Token Type</th>
+            <th>Syntax</th>
+            <th>When to use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Class Token</td>
+            <td><span class="code-inline">provide: OrderService</span></td>
+            <td>Standard — most common</td>
+          </tr>
+          <tr>
+            <td>String Token</td>
+            <td><span class="code-inline">provide: 'CONFIG'</span></td>
+            <td>Non-class values (strings, objects)</td>
+          </tr>
+          <tr>
+            <td>Symbol Token</td>
+            <td><span class="code-inline">provide: Symbol('key')</span></td>
+            <td>Guaranteed uniqueness</td>
+          </tr>
+          <tr>
+            <td>useClass</td>
+            <td><span class="code-inline">useClass: MockService</span></td>
+            <td>Swap implementation (e.g., testing)</td>
+          </tr>
+          <tr>
+            <td>useValue</td>
+            <td><span class="code-inline">useValue: { apiUrl: '...' }</span></td>
+            <td>Static values, config objects</td>
+          </tr>
+          <tr>
+            <td>useFactory</td>
+            <td><span class="code-inline">useFactory: (dep) => new X(dep)</span></td>
+            <td>Dynamic/async instantiation</td>
+          </tr>
+          <tr>
+            <td>useExisting</td>
+            <td><span class="code-inline">useExisting: OrderService</span></td>
+            <td>Alias — reuse existing provider</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── 4. MODULES ─── -->
+  <section class="section" id="modules">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Module System</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="module-tree">
+      <span class="tree-decorator">@Module</span>({
+      <br>&nbsp;&nbsp;imports:&nbsp; [<span class="tree-child">DatabaseModule</span>, <span class="tree-child">AuthModule</span>], &nbsp;&nbsp;<span class="tree-comment">// bring in other modules</span>
+      <br>&nbsp;&nbsp;controllers: [<span class="tree-child">OrderController</span>], &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tree-comment">// handle routes</span>
+      <br>&nbsp;&nbsp;providers:&nbsp; [<span class="tree-child">OrderService</span>, <span class="tree-child">OrderRepo</span>], &nbsp;&nbsp;&nbsp;<span class="tree-comment">// business logic & data</span>
+      <br>&nbsp;&nbsp;exports:&nbsp;&nbsp;&nbsp; [<span class="tree-child">OrderService</span>], &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tree-comment">// share with other modules</span>
+      <br>})
+      <br><span class="kw">export class</span> <span class="tree-root">OrderModule</span> {}
+    </div>
+
+    <div class="cards" style="margin-top: 20px;">
+      <div class="card">
+        <span class="card-tag">Root Module</span>
+        <h3>AppModule</h3>
+        <p>Entry point. Bootstrapped by <span class="code-inline">NestFactory.create(AppModule)</span>. Imports all feature modules.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag green">Feature Module</span>
+        <h3>Domain Module</h3>
+        <p>Groups related features. E.g., <span class="code-inline">OrderModule</span>, <span class="code-inline">UserModule</span>, <span class="code-inline">PaymentModule</span>. Keeps codebase modular and scalable.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag amber">Shared Module</span>
+        <h3>Shared Module</h3>
+        <p>Exports reusable providers. Any module that imports a SharedModule gets access to its exported providers.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag blue">@Global()</span>
+        <h3>Global Module</h3>
+        <p>Providers available everywhere without importing. Use sparingly — only for truly global things like config or logger.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Dynamic Module</span>
+        <h3>forRoot() / forFeature()</h3>
+        <p>Module configured at runtime. <span class="code-inline">forRoot(options)</span> configures once at app root. <span class="code-inline">forFeature(entity)</span> configures per feature (e.g., TypeORM).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 5. DTOs & VALIDATION ─── -->
+  <section class="section" id="dto">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">DTOs & Validation</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="compare">
+      <div class="compare-box">
+        <h4 style="color: var(--accent2);">class-validator decorators</h4>
+        <ul>
+          <li><span class="code-inline">@IsString()</span> — must be string</li>
+          <li><span class="code-inline">@IsEmail()</span> — valid email format</li>
+          <li><span class="code-inline">@IsNotEmpty()</span> — not null/undefined/empty</li>
+          <li><span class="code-inline">@IsNumber()</span> — numeric value</li>
+          <li><span class="code-inline">@IsUUID()</span> — valid UUID</li>
+          <li><span class="code-inline">@IsEnum(Status)</span> — enum value</li>
+          <li><span class="code-inline">@MinLength(n)</span> / <span class="code-inline">@MaxLength(n)</span></li>
+          <li><span class="code-inline">@IsOptional()</span> — skip if absent</li>
+          <li><span class="code-inline">@IsArray()</span> / <span class="code-inline">@ArrayMinSize(n)</span></li>
+          <li><span class="code-inline">@ValidateNested()</span> — nested object</li>
+        </ul>
+      </div>
+      <div class="compare-box">
+        <h4 style="color: var(--accent3);">class-transformer decorators</h4>
+        <ul>
+          <li><span class="code-inline">@Transform()</span> — custom transformation</li>
+          <li><span class="code-inline">@Exclude()</span> — omit from output</li>
+          <li><span class="code-inline">@Expose()</span> — include in output</li>
+          <li><span class="code-inline">@Type()</span> — specify nested type</li>
+          <li><span class="code-inline">plainToInstance()</span> — convert plain object</li>
+          <li><span class="code-inline">instanceToPlain()</span> — serialize class</li>
+          <li><span class="code-inline">@SerializeOptions()</span> — override serialization</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top: 20px;">
+<span class="cm">// DTO with validation</span>
+<br><span class="kw">export class</span> <span class="cls">CreateOrderDto</span> {
+<br>  <span class="dec">@IsString</span>() <span class="dec">@IsNotEmpty</span>()
+<br>  productId: <span class="kw">string</span>;
+<br>
+<br>  <span class="dec">@IsNumber</span>() <span class="dec">@Min</span>(<span class="num">1</span>)
+<br>  quantity: <span class="kw">number</span>;
+<br>
+<br>  <span class="dec">@IsOptional</span>() <span class="dec">@IsString</span>()
+<br>  couponCode?: <span class="kw">string</span>;
+<br>}
+<br>
+<br><span class="cm">// Enable globally in main.ts</span>
+<br>app.<span class="fn">useGlobalPipes</span>(<span class="kw">new</span> <span class="cls">ValidationPipe</span>({
+<br>  whitelist: <span class="kw">true</span>,       <span class="cm">// strips unknown fields</span>
+<br>  forbidNonWhitelisted: <span class="kw">true</span>, <span class="cm">// throws on unknown fields</span>
+<br>  transform: <span class="kw">true</span>,       <span class="cm">// auto-transforms types</span>
+<br>}));
+    </div>
+  </section>
+
+  <!-- ─── 6. HTTP DECORATORS ─── -->
+  <section class="section" id="http">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">HTTP & Routing Decorators</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Decorator</th>
+            <th>Source</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@Param(key)</td>
+            <td>Route param</td>
+            <td>Extracts URL parameter</td>
+            <td><span class="code-inline">@Param('id')</span> — from <span class="code-inline">/orders/:id</span></td>
+          </tr>
+          <tr>
+            <td>@Body()</td>
+            <td>Request body</td>
+            <td>Extracts request body (JSON)</td>
+            <td><span class="code-inline">@Body() dto: CreateOrderDto</span></td>
+          </tr>
+          <tr>
+            <td>@Query(key)</td>
+            <td>Query string</td>
+            <td>Extracts query param</td>
+            <td><span class="code-inline">@Query('page')</span> — from <span class="code-inline">?page=2</span></td>
+          </tr>
+          <tr>
+            <td>@Headers(key)</td>
+            <td>Request headers</td>
+            <td>Extracts header value</td>
+            <td><span class="code-inline">@Headers('authorization')</span></td>
+          </tr>
+          <tr>
+            <td>@Req()</td>
+            <td>Raw request</td>
+            <td>Entire Express/Fastify req object</td>
+            <td>Avoid unless necessary</td>
+          </tr>
+          <tr>
+            <td>@Res()</td>
+            <td>Raw response</td>
+            <td>Full control over response</td>
+            <td>Loses Interceptor/Pipe benefits</td>
+          </tr>
+          <tr>
+            <td>@HttpCode(n)</td>
+            <td>Response</td>
+            <td>Override default status code</td>
+            <td><span class="code-inline">@HttpCode(204)</span> for no content</td>
+          </tr>
+          <tr>
+            <td>@Redirect(url)</td>
+            <td>Response</td>
+            <td>Redirect to another URL</td>
+            <td><span class="code-inline">@Redirect('/new-path', 301)</span></td>
+          </tr>
+          <tr>
+            <td>@Header(k, v)</td>
+            <td>Response</td>
+            <td>Set a response header</td>
+            <td><span class="code-inline">@Header('Cache-Control', 'none')</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── 7. LIFECYCLE HOOKS ─── -->
+  <section class="section" id="lifecycle">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Application Lifecycle Hooks</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-circle">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <h4>OnModuleInit</h4>
+          <p>Called once the module's dependencies are resolved. Use for initialization tasks like connecting to external services or seeding data.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-circle">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <h4>OnApplicationBootstrap</h4>
+          <p>Called after ALL modules are initialized. The app is fully set up but not yet listening. Good for starting background tasks or schedulers.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-circle">▶</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <h4 style="color: var(--accent2);">App is Running (listening for requests)</h4>
+          <p>Normal operation. All lifecycle hooks below are part of graceful shutdown.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-circle">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <h4>OnModuleDestroy</h4>
+          <p>Called when a destroy signal is received. Use to clean up resources: close DB connections, cancel timers, flush queues.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-circle">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <h4>BeforeApplicationShutdown</h4>
+          <p>Called before the app shuts down. Receives the shutdown signal (e.g., <span class="code-inline">SIGTERM</span>). Can return a Promise to delay shutdown.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-circle">5</div>
+        </div>
+        <div class="flow-content">
+          <h4>OnApplicationShutdown</h4>
+          <p>Called after the HTTP server closes. Final cleanup. Enable shutdown hooks in main.ts: <span class="code-inline">app.enableShutdownHooks()</span>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 8. ADVANCED ─── -->
+  <section class="section" id="advanced">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Advanced Concepts</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <span class="card-tag green">Execution Context</span>
+        <h3>ExecutionContext</h3>
+        <p>Available in Guards and Interceptors. Provides context about what's being executed — HTTP, WebSocket, RPC, etc. Use <span class="code-inline">switchToHttp()</span>, <span class="code-inline">switchToWs()</span>, etc.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag amber">Metadata</span>
+        <h3>Reflector</h3>
+        <p>Reads metadata set by decorators. Used in Guards to read custom decorator data. Example: read <span class="code-inline">@Roles('admin')</span> in an AuthGuard via <span class="code-inline">reflector.get('roles', context)</span>.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">CQRS</span>
+        <h3>Command / Query / Event</h3>
+        <p>Pattern for separating reads from writes. <span class="code-inline">CommandBus</span> dispatches commands. <span class="code-inline">QueryBus</span> fetches data. <span class="code-inline">EventBus</span> publishes domain events. From <span class="code-inline">@nestjs/cqrs</span>.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag blue">Config</span>
+        <h3>ConfigModule / ConfigService</h3>
+        <p>Loads environment variables safely. <span class="code-inline">ConfigModule.forRoot()</span> in AppModule. Inject <span class="code-inline">ConfigService</span> and use <span class="code-inline">configService.get('DB_HOST')</span>. Supports validation schemas.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag green">Scheduling</span>
+        <h3>@Cron / @Interval</h3>
+        <p>Task scheduling via <span class="code-inline">@nestjs/schedule</span>. <span class="code-inline">@Cron('0 * * * *')</span> runs on schedule. <span class="code-inline">@Interval(5000)</span> runs every 5 seconds. <span class="code-inline">@Timeout(n)</span> runs once after delay.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag amber">Swagger</span>
+        <h3>API Documentation</h3>
+        <p>Auto-generates OpenAPI docs. Key decorators: <span class="code-inline">@ApiProperty()</span> on DTO fields, <span class="code-inline">@ApiOperation()</span> on endpoints, <span class="code-inline">@ApiTags()</span> on controllers, <span class="code-inline">@ApiBearerAuth()</span> for auth.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Microservices</span>
+        <h3>MessagePattern / EventPattern</h3>
+        <p><span class="code-inline">@MessagePattern('cmd')</span> — handles request-response. <span class="code-inline">@EventPattern('evt')</span> — fire-and-forget. <span class="code-inline">ClientProxy</span> sends messages. Supports TCP, Redis, Kafka, NATS, etc.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag blue">WebSockets</span>
+        <h3>Gateway</h3>
+        <p><span class="code-inline">@WebSocketGateway()</span> creates a socket server. <span class="code-inline">@SubscribeMessage('event')</span> handles messages. <span class="code-inline">@WebSocketServer()</span> injects the socket server instance.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag green">Database</span>
+        <h3>Repository Pattern</h3>
+        <p>TypeORM: <span class="code-inline">@InjectRepository(Order)</span> injects the repo. Use <span class="code-inline">repo.find()</span>, <span class="code-inline">repo.save()</span>, <span class="code-inline">repo.delete()</span>. Entity classes decorated with <span class="code-inline">@Entity()</span>, <span class="code-inline">@Column()</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 9. CHEAT SHEET ─── -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Quick Cheat Sheet</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Concept</th>
+            <th>What it does</th>
+            <th>Decorator / Class</th>
+            <th>When to use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Module</td><td>Groups related components</td><td>@Module()</td><td>Every feature</td></tr>
+          <tr><td>Controller</td><td>Routes HTTP requests</td><td>@Controller()</td><td>Every endpoint group</td></tr>
+          <tr><td>Service</td><td>Business logic</td><td>@Injectable()</td><td>Core logic layer</td></tr>
+          <tr><td>Guard</td><td>Allow/deny requests</td><td>CanActivate</td><td>Auth, RBAC</td></tr>
+          <tr><td>Interceptor</td><td>Transform in/out</td><td>NestInterceptor</td><td>Logging, caching, mapping</td></tr>
+          <tr><td>Middleware</td><td>Pre-route processing</td><td>NestMiddleware</td><td>CORS, logging, parsing</td></tr>
+          <tr><td>Pipe</td><td>Validate & transform input</td><td>PipeTransform</td><td>DTO validation, type coercion</td></tr>
+          <tr><td>Filter</td><td>Handle exceptions</td><td>ExceptionFilter</td><td>Custom error responses</td></tr>
+          <tr><td>DTO</td><td>Define input shape</td><td>Plain class + decorators</td><td>Every endpoint input</td></tr>
+          <tr><td>Entity</td><td>DB table mapping</td><td>@Entity()</td><td>TypeORM/Prisma models</td></tr>
+          <tr><td>Reflector</td><td>Read metadata</td><td>Reflector class</td><td>Guards reading custom decorators</td></tr>
+          <tr><td>ConfigService</td><td>Access env vars</td><td>@nestjs/config</td><td>Any configuration need</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>NestJS Terminology Reference · Built by <strong style="color: var(--accent);">Kshiti Patel</strong></span>
+    <span>v10+ · TypeScript</span>
+  </footer>
+
+</div>
+
+<script>
+  // Staggered animation on scroll
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationDelay = '0ms';
+        entry.target.style.opacity = '1';
+      }
+    });
+  }, { threshold: 0.05 });
+
+  sections.forEach(s => {
+    s.style.opacity = '0';
+    observer.observe(s);
+  });
+
+  // Smooth scroll for pills
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(pill.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>

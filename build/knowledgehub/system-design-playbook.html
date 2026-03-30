@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>System Design Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Clash+Display:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #08090d;
+  --surface: #0e1018;
+  --surface2: #13151f;
+  --border: #1c1f2e;
+  --border2: #252840;
+  --accent: #4f6ef7;
+  --accent-glow: rgba(79,110,247,0.15);
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --cyan: #22d3ee;
+  --purple: #a855f7;
+  --pink: #ec4899;
+  --text: #e2e8f0;
+  --muted: #4b5470;
+  --muted2: #6b7694;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Clash Display', 'JetBrains Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+#sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-header h1 {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+.sidebar-header p {
+  font-size: 10px;
+  color: var(--muted2);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+.sidebar-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-search input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  outline: none;
+}
+.sidebar-search input:focus { border-color: var(--accent); }
+.sidebar-search input::placeholder { color: var(--muted); }
+.sidebar-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 0;
+}
+.sidebar-list::-webkit-scrollbar { width: 4px; }
+.sidebar-list::-webkit-scrollbar-track { background: transparent; }
+.sidebar-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { background: var(--surface2); }
+.nav-item.active {
+  background: var(--accent-glow);
+  border-left-color: var(--accent);
+}
+.nav-item.active .nav-name { color: #fff; }
+.nav-icon { font-size: 16px; line-height: 1; flex-shrink: 0; }
+.nav-name { font-size: 12px; color: var(--muted2); font-weight: 500; }
+.nav-tag {
+  margin-left: auto;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.tag-rt { background: rgba(34,211,238,0.15); color: var(--cyan); }
+.tag-data { background: rgba(168,85,247,0.15); color: var(--purple); }
+.tag-media { background: rgba(245,158,11,0.15); color: var(--amber); }
+.tag-tx { background: rgba(239,68,68,0.15); color: var(--red); }
+.tag-loc { background: rgba(34,197,94,0.15); color: var(--green); }
+.tag-infra { background: rgba(236,72,153,0.15); color: var(--pink); }
+
+/* MAIN CONTENT */
+#main {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+}
+#main::-webkit-scrollbar { width: 6px; }
+#main::-webkit-scrollbar-track { background: transparent; }
+#main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.system-panel { display: none; padding: 0; }
+.system-panel.active { display: block; }
+
+/* SYSTEM HEADER */
+.sys-header {
+  padding: 40px 48px 32px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.sys-header::before {
+  content: attr(data-num);
+  position: absolute;
+  right: 40px;
+  top: 20px;
+  font-size: 120px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.02);
+  font-family: var(--display);
+  line-height: 1;
+  pointer-events: none;
+}
+.sys-icon { font-size: 40px; margin-bottom: 16px; display: block; }
+.sys-title {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.sys-subtitle { font-size: 12px; color: var(--muted2); letter-spacing: 1px; }
+.sys-tags { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.sys-tag {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 1px;
+  border: 1px solid;
+}
+
+/* CONTENT LAYOUT */
+.sys-body { padding: 40px 48px; display: flex; flex-direction: column; gap: 48px; }
+
+/* SECTION */
+.section { display: flex; flex-direction: column; gap: 20px; }
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted2);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-num {
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* REQUIREMENTS */
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.req-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.req-box h4 {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted2);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+.req-box ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.req-box ul li {
+  font-size: 12px;
+  color: #94a3b8;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.6;
+}
+.req-box ul li::before {
+  position: absolute; left: 0;
+  font-size: 11px;
+}
+.req-func li::before { content: '✓'; color: var(--green); }
+.req-nonfunc li::before { content: '◆'; color: var(--accent); }
+
+/* CAPACITY */
+.capacity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.cap-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.cap-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  font-family: var(--display);
+}
+.cap-label { font-size: 10px; color: var(--muted2); margin-top: 4px; display: block; letter-spacing: 1px; }
+
+/* ARCHITECTURE DIAGRAM */
+.arch-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  overflow-x: auto;
+}
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  min-width: 600px;
+}
+.arch-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.arch-row:last-child { margin-bottom: 0; }
+.arch-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 90px;
+}
+.arch-box {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.arch-label { font-size: 9px; color: var(--muted); letter-spacing: 0.5px; }
+.arch-arrow {
+  font-size: 18px;
+  color: var(--muted);
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+.arch-down-arrow {
+  text-align: center;
+  color: var(--muted);
+  font-size: 18px;
+  width: 100%;
+  margin: 4px 0;
+}
+.arch-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+/* Color variants */
+.box-blue { background: rgba(79,110,247,0.12); border-color: rgba(79,110,247,0.4); color: #818cf8; }
+.box-green { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.35); color: #4ade80; }
+.box-amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.35); color: #fbbf24; }
+.box-red { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); color: #f87171; }
+.box-cyan { background: rgba(34,211,238,0.1); border-color: rgba(34,211,238,0.35); color: #67e8f9; }
+.box-purple { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.35); color: #c084fc; }
+.box-pink { background: rgba(236,72,153,0.1); border-color: rgba(236,72,153,0.35); color: #f472b6; }
+.box-gray { background: rgba(100,116,139,0.1); border-color: rgba(100,116,139,0.3); color: #94a3b8; }
+.box-user { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: #e2e8f0; }
+
+/* DATA FLOW */
+.flow-steps { display: flex; flex-direction: column; gap: 0; }
+.flow-step {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 42px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border2);
+}
+.step-num {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+  z-index: 1;
+}
+.step-content { flex: 1; padding-bottom: 28px; }
+.step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  padding-top: 8px;
+}
+.step-desc { font-size: 12px; color: #94a3b8; line-height: 1.7; }
+.step-desc code {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--cyan);
+}
+.step-tech {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.step-pill {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* COMPONENTS */
+.components-grid { display: flex; flex-direction: column; gap: 12px; }
+.component-row {
+  display: flex;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  align-items: flex-start;
+}
+.component-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.component-info { flex: 1; }
+.component-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.component-role { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+.component-why {
+  font-size: 11px;
+  color: var(--amber);
+  margin-top: 6px;
+  padding-left: 10px;
+  border-left: 2px solid rgba(245,158,11,0.4);
+}
+
+/* SCHEMA */
+.schema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.schema-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.schema-thead {
+  background: var(--surface2);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.schema-name { font-size: 12px; font-weight: 700; color: #fff; }
+.schema-db { font-size: 10px; color: var(--muted2); padding: 2px 8px; border-radius: 3px; background: var(--bg); }
+.schema-body { padding: 12px 0; }
+.schema-field {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 16px;
+  font-size: 11px;
+}
+.schema-field:hover { background: var(--surface2); }
+.field-name { color: var(--cyan); font-weight: 500; }
+.field-type { color: var(--muted2); }
+.field-note { color: var(--green); font-size: 10px; }
+
+/* SCALING */
+.scaling-list { display: flex; flex-direction: column; gap: 10px; }
+.scaling-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  align-items: flex-start;
+}
+.scaling-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.scaling-text { flex: 1; }
+.scaling-title { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+.scaling-desc { font-size: 11px; color: var(--muted2); line-height: 1.6; }
+
+/* TRICKS */
+.tricks-box {
+  background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(249,115,22,0.05));
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 12px;
+  padding: 24px;
+}
+.tricks-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+.tricks-list { display: flex; flex-direction: column; gap: 10px; }
+.trick-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.trick-bullet {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(245,158,11,0.15);
+  border: 1px solid rgba(245,158,11,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  color: var(--amber);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.trick-text { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+.trick-text strong { color: #fff; font-weight: 600; }
+
+/* WELCOME */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 60px;
+  text-align: center;
+}
+.welcome h2 {
+  font-family: var(--display);
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.welcome p { color: var(--muted2); font-size: 13px; line-height: 1.7; max-width: 400px; }
+
+/* responsive */
+@media(max-width: 900px) {
+  #sidebar { width: 220px; min-width: 220px; }
+  .sys-header, .sys-body { padding-left: 24px; padding-right: 24px; }
+  .req-grid { grid-template-columns: 1fr; }
+}
+@media(max-width: 640px) {
+  body { flex-direction: column; }
+  #sidebar { width: 100%; min-width: unset; height: auto; max-height: 50vh; }
+  #main { height: 50vh; }
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h1>System Design Blueprint</h1>
+    <p>16 SYSTEMS · FULL BLUEPRINTS</p>
+  </div>
+  <div class="sidebar-search">
+    <input type="text" id="navSearch" placeholder="Search systems..." oninput="searchNav()"/>
+  </div>
+  <div class="sidebar-list" id="navList">
+    <div class="nav-item active" onclick="showSystem('chat')" data-name="Chat / Messaging App">
+      <span class="nav-icon">💬</span><span class="nav-name">Chat / Messaging App</span>
+      <span class="nav-tag tag-rt">RT</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('feed')" data-name="Social Media Feed">
+      <span class="nav-icon">📱</span><span class="nav-name">Social Media Feed</span>
+      <span class="nav-tag tag-data">DATA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('video')" data-name="Video Streaming">
+      <span class="nav-icon">▶️</span><span class="nav-name">Video Streaming</span>
+      <span class="nav-tag tag-media">MEDIA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('ride')" data-name="Ride Sharing App">
+      <span class="nav-icon">🗺️</span><span class="nav-name">Ride Sharing App</span>
+      <span class="nav-tag tag-loc">LOC</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('ecom')" data-name="E-Commerce Platform">
+      <span class="nav-icon">🛒</span><span class="nav-name">E-Commerce Platform</span>
+      <span class="nav-tag tag-tx">TX</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('storage')" data-name="File Storage (Drive)">
+      <span class="nav-icon">📁</span><span class="nav-name">File Storage (Drive)</span>
+      <span class="nav-tag tag-media">MEDIA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('url')" data-name="URL Shortener">
+      <span class="nav-icon">🔗</span><span class="nav-name">URL Shortener</span>
+      <span class="nav-tag tag-infra">INFRA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('notif')" data-name="Notification System">
+      <span class="nav-icon">🔔</span><span class="nav-name">Notification System</span>
+      <span class="nav-tag tag-infra">INFRA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('search')" data-name="Search / Typeahead">
+      <span class="nav-icon">🔍</span><span class="nav-name">Search / Typeahead</span>
+      <span class="nav-tag tag-data">DATA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('payment')" data-name="Payment System">
+      <span class="nav-icon">💳</span><span class="nav-name">Payment System</span>
+      <span class="nav-tag tag-tx">TX</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('ratelimit')" data-name="Rate Limiter">
+      <span class="nav-icon">🚦</span><span class="nav-name">Rate Limiter</span>
+      <span class="nav-tag tag-infra">INFRA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('collab')" data-name="Collaborative Docs">
+      <span class="nav-icon">📝</span><span class="nav-name">Collaborative Docs</span>
+      <span class="nav-tag tag-rt">RT</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('reco')" data-name="Recommendation Engine">
+      <span class="nav-icon">🤖</span><span class="nav-name">Recommendation Engine</span>
+      <span class="nav-tag tag-data">DATA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('iot')" data-name="IoT / Sensor Data">
+      <span class="nav-icon">📡</span><span class="nav-name">IoT / Sensor Data</span>
+      <span class="nav-tag tag-data">DATA</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('live')" data-name="Live Streaming">
+      <span class="nav-icon">🎮</span><span class="nav-name">Live Streaming</span>
+      <span class="nav-tag tag-rt">RT</span>
+    </div>
+    <div class="nav-item" onclick="showSystem('cache')" data-name="Distributed Cache">
+      <span class="nav-icon">⚡</span><span class="nav-name">Distributed Cache</span>
+      <span class="nav-tag tag-infra">INFRA</span>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<!-- CHAT -->
+<div class="system-panel active" id="sys-chat">
+  <div class="sys-header" data-num="01">
+    <span class="sys-icon">💬</span>
+    <div class="sys-title">Chat / Messaging App</div>
+    <div class="sys-subtitle">e.g. WhatsApp · Slack · Discord · Telegram · iMessage</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">REAL-TIME</span>
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">HIGH WRITE</span>
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">DISTRIBUTED</span>
+    </div>
+  </div>
+  <div class="sys-body">
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>1-on-1 and group messaging</li>
+            <li>Send text, images, files, voice notes</li>
+            <li>Message delivery status (sent ✓, delivered ✓✓, read 🔵)</li>
+            <li>Online presence / last seen</li>
+            <li>Push notifications when offline</li>
+            <li>Message history / search</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Low latency — messages delivered in &lt;100ms</li>
+            <li>High availability — 99.99% uptime</li>
+            <li>Eventual consistency for read receipts</li>
+            <li>Messages stored for 5+ years</li>
+            <li>End-to-end encryption supported</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Capacity Estimates</div>
+      <div class="capacity-grid">
+        <div class="cap-card"><span class="cap-val">50M</span><span class="cap-label">Daily Active Users</span></div>
+        <div class="cap-card"><span class="cap-val">40</span><span class="cap-label">Msgs/user/day</span></div>
+        <div class="cap-card"><span class="cap-val">2B</span><span class="cap-label">Messages/day</span></div>
+        <div class="cap-card"><span class="cap-val">~23K</span><span class="cap-label">Msgs/second (peak)</span></div>
+        <div class="cap-card"><span class="cap-val">~20TB</span><span class="cap-label">Storage/day</span></div>
+        <div class="cap-card"><span class="cap-val">5M</span><span class="cap-label">Concurrent WS connections</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Architecture Diagram</div>
+      <div class="arch-diagram">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:center;min-width:700px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-user">📱 User A</div></div>
+            <div class="arch-arrow">⟷</div>
+            <div class="arch-node"><div class="arch-box box-cyan">WebSocket Server</div><div class="arch-label">Stateful</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-green">Redis Pub/Sub</div><div class="arch-label">Fan-out</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-cyan">WebSocket Server</div><div class="arch-label">Stateful</div></div>
+            <div class="arch-arrow">⟷</div>
+            <div class="arch-node"><div class="arch-box box-user">📱 User B</div></div>
+          </div>
+          <div style="display:flex;gap:80px;">
+            <div style="font-size:18px;color:var(--muted)">↓</div>
+            <div style="font-size:18px;color:var(--muted)">↓</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-blue">API Gateway</div><div class="arch-label">REST + WS</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-purple">Message Service</div><div class="arch-label">Core Logic</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-purple">Kafka</div><div class="arch-label">Async Queue</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-amber">Notification<br/>Service</div><div class="arch-label">Offline Push</div></div>
+          </div>
+          <div style="font-size:18px;color:var(--muted)">↓</div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div class="arch-node"><div class="arch-box box-red">Cassandra</div><div class="arch-label">Message Store</div></div>
+            <div class="arch-node"><div class="arch-box box-green">Redis</div><div class="arch-label">Presence + Session</div></div>
+            <div class="arch-node"><div class="arch-box box-blue">PostgreSQL</div><div class="arch-label">Users + Groups</div></div>
+            <div class="arch-node"><div class="arch-box box-amber">S3</div><div class="arch-label">Media Files</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">4</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">User Opens App → WebSocket Connection</div>
+            <div class="step-desc">User A opens the app. The client establishes a <code>WebSocket</code> connection to a Chat Server. This is a persistent TCP connection — not HTTP. The server registers User A's connection in <code>Redis</code> as <code>user_id → server_id + socket_id</code>. This is also how "online presence" is tracked (key with TTL = last heartbeat).</div>
+            <div class="step-tech">
+              <span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket</span>
+              <span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">User A Sends a Message</div>
+            <div class="step-desc">User A types a message and hits send. The client sends it over the WebSocket to Chat Server 1. The server assigns it a unique <code>message_id</code> (using a Snowflake ID or UUID). The message is immediately written to <code>Cassandra</code> with the conversation_id as the partition key — ensuring all messages in a conversation are co-located. The server sends back a <code>SENT</code> receipt to User A (one checkmark ✓).</div>
+            <div class="step-tech">
+              <span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span>
+              <span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">Snowflake ID</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Routing to User B (Cross-Server)</div>
+            <div class="step-desc">Chat Server 1 looks up User B's location in <code>Redis</code>: "User B is connected to Chat Server 3." Server 1 publishes the message to <code>Redis Pub/Sub</code> on the channel <code>user:B</code>. Chat Server 3 is subscribed to that channel, receives the message, and pushes it over User B's WebSocket connection. User B sees the message instantly. Server sends <code>DELIVERED</code> receipt back (double checkmark ✓✓).</div>
+            <div class="step-tech">
+              <span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Pub/Sub</span>
+              <span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">User B is Offline → Push Notification</div>
+            <div class="step-desc">If User B is NOT in Redis (offline), Chat Server 1 publishes the message to <code>Kafka</code>. A Notification Service consumes from Kafka and calls <code>APNs</code> (Apple) or <code>FCM</code> (Android) to deliver a push notification. The message is still stored in Cassandra — User B will fetch missed messages when they come back online via the <code>REST API</code>.</div>
+            <div class="step-tech">
+              <span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span>
+              <span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">APNs / FCM</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">User B Opens App → Syncs Missed Messages</div>
+            <div class="step-desc">User B reconnects. Client sends the <code>last_seen_message_id</code> to the server. The server queries Cassandra: <code>SELECT * FROM messages WHERE conversation_id=X AND message_id > last_seen_id</code>. All missed messages are returned in order. Once B reads the message, a <code>READ</code> receipt event is sent back over WebSocket to User A (blue checkmarks 🔵).</div>
+            <div class="step-tech">
+              <span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span>
+              <span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">Media Upload (Images / Files)</div>
+            <div class="step-desc">For media, the client directly uploads to <code>S3</code> using a pre-signed URL (server generates it, but bytes never go through your app server). The S3 URL is sent as the message content. On receive, clients download from <code>CDN</code> (CloudFront), not from S3 directly. This keeps bandwidth off your servers entirely.</div>
+            <div class="step-tech">
+              <span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">S3</span>
+              <span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">CDN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">5</span>Key Components</div>
+      <div class="components-grid">
+        <div class="component-row">
+          <div class="component-icon" style="background:rgba(34,211,238,0.12)">🔌</div>
+          <div class="component-info">
+            <div class="component-name">WebSocket Servers (Stateful)</div>
+            <div class="component-role">Each server maintains persistent connections with a set of users. Unlike REST servers, these are stateful — you can't route any request to any server; each user must always hit THEIR server.</div>
+            <div class="component-why">→ Consistent hashing routes users to the same server. If a server dies, clients reconnect and Redis re-registers them on a new server.</div>
+          </div>
+        </div>
+        <div class="component-row">
+          <div class="component-icon" style="background:rgba(34,197,94,0.12)">🔄</div>
+          <div class="component-info">
+            <div class="component-name">Redis (Pub/Sub + Presence)</div>
+            <div class="component-role">Two jobs: (1) Routes messages between chat servers via pub/sub channels. (2) Tracks who is online via <code>user_id → server_id</code> with heartbeat TTLs.</div>
+            <div class="component-why">→ In-memory = microsecond lookups. Presence must be checked on EVERY message send — it cannot be slow.</div>
+          </div>
+        </div>
+        <div class="component-row">
+          <div class="component-icon" style="background:rgba(239,68,68,0.12)">🗄️</div>
+          <div class="component-info">
+            <div class="component-name">Cassandra (Message Store)</div>
+            <div class="component-role">Stores all messages. Schema: partition key = <code>conversation_id</code>, clustering key = <code>message_id DESC</code>. This ensures all messages for a chat are on the same node and sorted by time.</div>
+            <div class="component-why">→ Cassandra is designed for high write throughput and time-ordered data. PostgreSQL would buckle under billions of inserts/day.</div>
+          </div>
+        </div>
+        <div class="component-row">
+          <div class="component-icon" style="background:rgba(168,85,247,0.12)">📨</div>
+          <div class="component-info">
+            <div class="component-name">Kafka (Async Events)</div>
+            <div class="component-role">Receives message events for async processing: offline notifications, analytics, message search indexing. Decouples the critical write path from all secondary concerns.</div>
+            <div class="component-why">→ Never do heavy work synchronously in the hot path. Kafka buffers it and workers process at their own pace.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">6</span>Database Schema</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">messages</span><span class="schema-db">Cassandra</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">conversation_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">message_id</span><span class="field-type">TimeUUID</span><span class="field-note">Cluster Key</span></div>
+            <div class="schema-field"><span class="field-name">sender_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">content</span><span class="field-type">TEXT</span></div>
+            <div class="schema-field"><span class="field-name">type</span><span class="field-type">ENUM</span><span class="field-note">text/image/file</span></div>
+            <div class="schema-field"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">sent/delivered/read</span></div>
+            <div class="schema-field"><span class="field-name">created_at</span><span class="field-type">TIMESTAMP</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">users</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">user_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">username</span><span class="field-type">VARCHAR</span><span class="field-note">UNIQUE</span></div>
+            <div class="schema-field"><span class="field-name">phone</span><span class="field-type">VARCHAR</span></div>
+            <div class="schema-field"><span class="field-name">profile_pic</span><span class="field-type">TEXT</span><span class="field-note">S3 URL</span></div>
+            <div class="schema-field"><span class="field-name">public_key</span><span class="field-type">TEXT</span><span class="field-note">E2E encryption</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">conversations</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">conversation_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">type</span><span class="field-type">ENUM</span><span class="field-note">direct/group</span></div>
+            <div class="schema-field"><span class="field-name">name</span><span class="field-type">VARCHAR</span><span class="field-note">group name</span></div>
+            <div class="schema-field"><span class="field-name">created_by</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">created_at</span><span class="field-type">TIMESTAMP</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">presence (Redis)</span><span class="schema-db">Redis</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">user:{id}:server</span><span class="field-type">STRING</span><span class="field-note">server_id</span></div>
+            <div class="schema-field"><span class="field-name">user:{id}:online</span><span class="field-type">BOOL</span><span class="field-note">TTL=30s</span></div>
+            <div class="schema-field"><span class="field-name">user:{id}:last_seen</span><span class="field-type">TIMESTAMP</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">7</span>Scaling Strategy</div>
+      <div class="scaling-list">
+        <div class="scaling-item">
+          <div class="scaling-icon">⚖️</div>
+          <div class="scaling-text">
+            <div class="scaling-title">Scale WebSocket Servers Horizontally</div>
+            <div class="scaling-desc">Use consistent hashing to route each user to a specific server. Each server handles ~100K concurrent connections. Add servers as load grows. Redis stores the routing table.</div>
+          </div>
+        </div>
+        <div class="scaling-item">
+          <div class="scaling-icon">🔀</div>
+          <div class="scaling-text">
+            <div class="scaling-title">Cassandra Horizontal Sharding</div>
+            <div class="scaling-desc">Cassandra natively shards by partition key (conversation_id). Add more nodes and Cassandra redistributes data automatically. Scales to billions of messages with no schema changes.</div>
+          </div>
+        </div>
+        <div class="scaling-item">
+          <div class="scaling-icon">🌍</div>
+          <div class="scaling-text">
+            <div class="scaling-title">Multi-Region Deployment</div>
+            <div class="scaling-desc">Deploy WebSocket servers and Cassandra in every region. Users connect to nearest region. Cross-region messages route through Kafka. Cassandra supports multi-datacenter replication natively.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">8</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Message ordering</strong>: Never use wall-clock timestamps for ordering — clock skew between servers causes issues. Use a <strong>Lamport clock or Snowflake ID</strong> (timestamp + server ID + sequence) which is globally monotonically increasing.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why Cassandra over PostgreSQL for messages</strong>: PostgreSQL does ~10K writes/sec. Cassandra does 1M+ writes/sec. At WhatsApp scale (50B msgs/day), there's no choice. Also Cassandra's partition key = conversation_id means range scans are O(1) per conversation.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>End-to-end encryption</strong>: Each user has a public/private key pair. Private key stored ONLY on device. Messages encrypted with recipient's public key before sending. Server stores only ciphertext — even WhatsApp can't read your messages.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Group chat fan-out problem</strong>: If a group has 1000 members, one message = 1000 WebSocket writes + 1000 Cassandra writes. Solution: store one copy of the message, each member has a <strong>pointer</strong> to it (not a copy). Only send the message_id in WebSocket fan-out.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>The exactly-once delivery illusion</strong>: Networks are unreliable — message can be sent twice on retry. Use <strong>idempotency keys</strong> (client-generated UUID per message). Server checks if message_id already exists before writing.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SOCIAL MEDIA FEED -->
+<div class="system-panel" id="sys-feed">
+  <div class="sys-header" data-num="02">
+    <span class="sys-icon">📱</span>
+    <div class="sys-title">Social Media Feed</div>
+    <div class="sys-subtitle">e.g. Twitter/X · Instagram · Facebook · LinkedIn</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">DATA SCALE</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">FAN-OUT</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">CACHE HEAVY</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>Create posts (text, image, video)</li>
+            <li>Follow / unfollow users</li>
+            <li>View personalized home feed</li>
+            <li>Like, comment, repost/share</li>
+            <li>Search for users and posts</li>
+            <li>Trending topics / hashtags</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Feed loads in &lt;200ms</li>
+            <li>Eventual consistency for feed (slight delay OK)</li>
+            <li>Read-heavy: 100:1 read-to-write ratio</li>
+            <li>Handle celebrities with 10M+ followers</li>
+            <li>High availability over strong consistency</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Capacity Estimates</div>
+      <div class="capacity-grid">
+        <div class="cap-card"><span class="cap-val">300M</span><span class="cap-label">Daily Active Users</span></div>
+        <div class="cap-card"><span class="cap-val">5M</span><span class="cap-label">Posts/day</span></div>
+        <div class="cap-card"><span class="cap-val">~60</span><span class="cap-label">Posts/second</span></div>
+        <div class="cap-card"><span class="cap-val">30B</span><span class="cap-label">Feed reads/day</span></div>
+        <div class="cap-card"><span class="cap-val">~350K</span><span class="cap-label">Feed reads/second</span></div>
+        <div class="cap-card"><span class="cap-val">~200TB</span><span class="cap-label">Media storage/day</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Architecture Diagram</div>
+      <div class="arch-diagram">
+        <div style="display:flex;flex-direction:column;gap:14px;align-items:center;min-width:700px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-user">👤 User</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-blue">API Gateway</div><div class="arch-label">Rate Limiting</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-purple">Post Service</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-purple">Kafka</div><div class="arch-label">post.created</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:16px;padding-left:280px;">
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+              <div style="font-size:16px;color:var(--muted)">↓</div>
+              <div class="arch-node"><div class="arch-box box-cyan">Fan-out Service</div></div>
+              <div style="font-size:16px;color:var(--muted)">↓</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="arch-node"><div class="arch-box box-green">Redis Feed Cache</div><div class="arch-label">per-user list</div></div>
+                <div class="arch-arrow">+</div>
+                <div class="arch-node"><div class="arch-box box-red">Cassandra</div><div class="arch-label">post store</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;">
+            <div class="arch-node"><div class="arch-box box-user">👤 Reader</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-blue">Feed Service</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-green">Redis</div><div class="arch-label">Cache HIT</div></div>
+            <div class="arch-arrow">or</div>
+            <div class="arch-node"><div class="arch-box box-red">Cassandra</div><div class="arch-label">Cache MISS</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-amber">S3 + CDN</div><div class="arch-label">Images/Videos</div></div>
+            <div class="arch-node"><div class="arch-box box-blue">PostgreSQL</div><div class="arch-label">Users + Follows</div></div>
+            <div class="arch-node"><div class="arch-box box-cyan">Elasticsearch</div><div class="arch-label">Search + Trends</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">4</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">User Creates a Post</div>
+            <div class="step-desc">User submits post. <code>Post Service</code> validates, saves the post to <code>Cassandra</code> (the raw post lives here forever), and uploads any media directly to <code>S3</code> via pre-signed URL. Post gets a unique <code>post_id</code> (Snowflake ID). Service publishes a <code>post.created</code> event to <code>Kafka</code>.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">S3</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Fan-out Service Distributes the Post</div>
+            <div class="step-desc">The <code>Fan-out Service</code> consumes the Kafka event. It fetches the author's follower list from <code>PostgreSQL</code>. For each follower, it PREPENDS the new <code>post_id</code> into that user's feed list in <code>Redis</code> (a sorted set or list capped at 500 items). This is the <strong>push model</strong> (fan-out-on-write).</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Celebrity Exception (Pull Model)</div>
+            <div class="step-desc">If the author has &gt;1M followers, pushing to 1M Redis keys for ONE post is too slow. Solution: <strong>skip the fan-out</strong> for celebrities. When a user loads their feed, the Feed Service fetches posts from celebrities they follow directly from Cassandra and merges them with their pre-computed feed from Redis. This is the <strong>hybrid model</strong>.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">User Reads Their Feed</div>
+            <div class="step-desc">User opens the app and requests their home feed. <code>Feed Service</code> reads the user's <code>post_id</code> list from <code>Redis</code> (fast, already sorted). It batch-fetches the actual post data for those IDs from <code>Cassandra</code>. CDN URLs for images are served directly — never through the app server. Response is paginated using cursor-based pagination.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis</span><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">CDN</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Likes, Comments, Engagement</div>
+            <div class="step-desc">Like events go to <code>Redis</code> counter (INCR) for real-time counts, and also queued in <code>Kafka</code> for async persistence to <code>Cassandra</code>. Never write every like directly to the database — aggregate in Redis, flush to DB every 30 seconds in batch. Comments stored in Cassandra with post_id as partition key.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Counter</span><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">Search and Trending</div>
+            <div class="step-desc">Every post is also indexed into <code>Elasticsearch</code> by the fan-out service. Trending topics computed using a <code>Redis sorted set</code> — hashtag mentions are INCRed with a sliding window TTL. Top-10 trending = ZREVRANGE in O(log N).</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Elasticsearch</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Sorted Set</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">5</span>Database Schema</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">posts</span><span class="schema-db">Cassandra</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">post_id</span><span class="field-type">TimeUUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">user_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">content</span><span class="field-type">TEXT</span></div>
+            <div class="schema-field"><span class="field-name">media_urls</span><span class="field-type">LIST&lt;TEXT&gt;</span></div>
+            <div class="schema-field"><span class="field-name">hashtags</span><span class="field-type">SET&lt;TEXT&gt;</span></div>
+            <div class="schema-field"><span class="field-name">created_at</span><span class="field-type">TIMESTAMP</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">user_feed (Redis)</span><span class="schema-db">Redis</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">feed:{user_id}</span><span class="field-type">ZSET</span><span class="field-note">score=timestamp</span></div>
+            <div class="schema-field"><span class="field-name">value</span><span class="field-type">post_id</span><span class="field-note">max 500 items</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">follows</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">follower_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">followee_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">created_at</span><span class="field-type">TIMESTAMP</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">6</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>The fan-out dilemma</strong>: Push (fan-out-on-write) = fast reads, slow writes. Pull (fan-out-on-read) = slow reads, fast writes. The answer is <strong>hybrid</strong>: push for regular users, pull for celebrities. The interviewer is testing if you know this.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Cursor vs Offset pagination</strong>: Never use <code>OFFSET 100</code> for feeds. If 5 new posts appear, offset shifts and you skip/repeat items. Use <strong>cursor = last_seen_post_id</strong>. This is stable regardless of insertions.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Like counts don't need to be exact</strong>: "1.2M likes" is fine. Use <strong>Redis INCR</strong> (fast, atomic) and flush to DB in batches. No need for a DB write on every like — that's a classic bottleneck interview answer.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Feed ranking vs chronological</strong>: A pure time-sorted feed is easy. A <strong>ranked feed</strong> (like Facebook/Instagram) involves a ML scoring model. Pre-compute scores offline using Spark, store ranked post_id list in Redis per user. Refresh every 15 minutes.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO STREAMING -->
+<div class="system-panel" id="sys-video">
+  <div class="sys-header" data-num="03">
+    <span class="sys-icon">▶️</span>
+    <div class="sys-title">Video Streaming</div>
+    <div class="sys-subtitle">e.g. YouTube · Netflix · Vimeo · Dailymotion</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">MEDIA HEAVY</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">CDN DRIVEN</span>
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">PIPELINE</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>Upload videos (any format/size)</li>
+            <li>Stream videos at multiple quality levels</li>
+            <li>Adaptive bitrate based on connection speed</li>
+            <li>Search videos, comments, likes</li>
+            <li>Video recommendations</li>
+            <li>Resume watching from last position</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Video must start playing in &lt;2 seconds</li>
+            <li>No buffering on stable connections</li>
+            <li>Support millions of concurrent viewers</li>
+            <li>500 hours of video uploaded every minute</li>
+            <li>99.9% availability</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Architecture Diagram</div>
+      <div class="arch-diagram">
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:700px;">
+          <div style="text-align:center;font-size:11px;color:var(--muted2);letter-spacing:2px;margin-bottom:4px;">— UPLOAD PATH —</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-user">📹 Creator</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-blue">Upload Service</div><div class="arch-label">Pre-signed URL</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-amber">S3 Raw</div><div class="arch-label">Original file</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-purple">Kafka</div><div class="arch-label">upload.done</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-cyan">Transcoder Workers</div><div class="arch-label">FFmpeg fleet</div></div>
+          </div>
+          <div style="display:flex;gap:8px;padding-left:580px;">
+            <div style="font-size:16px;color:var(--muted)">↓</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding-left:450px;">
+            <div class="arch-node"><div class="arch-box box-amber">S3 Processed</div><div class="arch-label">360p/720p/1080p chunks</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-blue">CDN</div><div class="arch-label">Edge distribution</div></div>
+          </div>
+          <div style="text-align:center;font-size:11px;color:var(--muted2);letter-spacing:2px;margin:4px 0;">— PLAYBACK PATH —</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-user">👤 Viewer</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-blue">Video API</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-green">Redis</div><div class="arch-label">Metadata cache</div></div>
+            <div class="arch-arrow">+</div>
+            <div class="arch-node"><div class="arch-box box-blue">CDN HLS chunks</div><div class="arch-label">Adaptive stream</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Creator Uploads Video</div>
+            <div class="step-desc">Client requests a pre-signed S3 URL from the <code>Upload Service</code>. The client uploads the raw video file DIRECTLY to <code>S3</code> — your servers never touch the bytes (crucial for scalability). After upload completes, S3 triggers an event (or the client notifies your API) and a <code>upload.completed</code> event goes to <code>Kafka</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Transcoding Pipeline (DAG)</div>
+            <div class="step-desc">A Transcoder Worker fleet picks up the Kafka event. Each worker downloads the raw video from S3 and uses <code>FFmpeg</code> to transcode into multiple resolutions: 360p, 480p, 720p, 1080p, 4K. Each resolution is split into <strong>2-10 second chunks</strong> in HLS format (<code>.m3u8</code> manifest + <code>.ts</code> chunk files). A thumbnail is extracted. All outputs uploaded back to a separate <code>S3 bucket (processed)</code>. This is a <strong>DAG pipeline</strong>: transcode → thumbnail → metadata → index.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">CDN Distribution</div>
+            <div class="step-desc">Processed S3 is the <strong>origin</strong>. CDN (CloudFront/Akamai) has 200+ edge nodes globally. First request to each edge = CDN fetches from S3 origin and caches. All subsequent requests served from nearest edge node. This is why Netflix can serve 250M users — their origin only handles a tiny fraction of traffic.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Viewer Requests Playback</div>
+            <div class="step-desc">Viewer clicks play. <code>Video API</code> checks <code>Redis</code> for cached video metadata (title, description, available resolutions, CDN URL of .m3u8 manifest). On cache miss, fetches from <code>PostgreSQL</code> and caches. Returns the <code>manifest URL</code> pointing to the CDN. Video player downloads the <code>.m3u8</code> manifest from CDN, which lists all chunk URLs.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Adaptive Bitrate Streaming (ABR)</div>
+            <div class="step-desc">The video player monitors the viewer's network bandwidth every second. If buffer is healthy → request higher quality chunks (1080p). If buffer is low → drop to 480p. The player fetches chunks from CDN autonomously — your servers are not involved at all during playback. This is the beauty of HLS: the player drives quality, not the server.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">View Count, Watch History, Recommendations</div>
+            <div class="step-desc">Every view event goes to <code>Kafka</code>. A View Counter service uses <code>Redis HyperLogLog</code> to count approximate unique viewers (±0.81% error, uses only 12KB memory vs millions of user IDs). Watch position saved to <code>Redis</code> every 15 seconds, flushed to <code>Cassandra</code> on exit. Recommendation signals fed into ML pipeline via Kafka → Spark → vector store.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">4</span>Database Schema</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">videos</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">video_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">creator_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">title</span><span class="field-type">VARCHAR</span></div>
+            <div class="schema-field"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">processing/ready</span></div>
+            <div class="schema-field"><span class="field-name">manifest_url</span><span class="field-type">TEXT</span><span class="field-note">CDN .m3u8</span></div>
+            <div class="schema-field"><span class="field-name">duration_sec</span><span class="field-type">INT</span></div>
+            <div class="schema-field"><span class="field-name">thumbnail_url</span><span class="field-type">TEXT</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">watch_history</span><span class="schema-db">Cassandra</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">user_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">video_id</span><span class="field-type">UUID</span><span class="field-note">Cluster key</span></div>
+            <div class="schema-field"><span class="field-name">watched_at</span><span class="field-type">TIMESTAMP</span></div>
+            <div class="schema-field"><span class="field-name">position_sec</span><span class="field-type">INT</span><span class="field-note">Resume point</span></div>
+            <div class="schema-field"><span class="field-name">completed</span><span class="field-type">BOOLEAN</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">5</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why chunked video?</strong> If you stream a 2GB file, the user waits for the whole thing. With <strong>2-second chunks</strong>, playback starts after downloading just the first chunk (~1MB). The player pre-buffers the next few chunks while playing.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Transcoding bottleneck</strong>: A 1-hour video takes ~20 minutes to transcode at full quality. To parallelize: split video into 1-minute segments, transcode all segments in parallel across a GPU worker fleet, then reassemble. YouTube does this.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>CDN cache hit rate</strong>: Popular videos have 99%+ CDN cache hits. Long-tail videos (rarely watched) often miss the CDN — that's fine because they have few viewers. The CDN economics work because top 1% of videos get 99% of traffic.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>HyperLogLog for view counts</strong>: Storing 1M user IDs to count unique viewers uses 8MB. HyperLogLog counts 1B unique items using only 12KB with 0.81% error. At YouTube scale, this is the only sane approach.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIDE SHARING -->
+<div class="system-panel" id="sys-ride">
+  <div class="sys-header" data-num="04">
+    <span class="sys-icon">🗺️</span>
+    <div class="sys-title">Ride Sharing App</div>
+    <div class="sys-subtitle">e.g. Uber · Lyft · Ola · Bolt · DoorDash</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">LOCATION</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">REAL-TIME</span>
+      <span class="sys-tag" style="color:var(--red);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)">MATCHING</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>Rider requests a ride from A to B</li>
+            <li>Find nearby available drivers</li>
+            <li>Match rider to nearest driver</li>
+            <li>Real-time driver location on map</li>
+            <li>Price estimation before booking</li>
+            <li>Trip history, ratings, payments</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Driver location updated every 4 seconds</li>
+            <li>Match found in &lt;1 second</li>
+            <li>System handles 1M concurrent drivers</li>
+            <li>Low latency for location reads (&lt;10ms)</li>
+            <li>ACID for payments</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Driver Goes Online → Location Updates</div>
+            <div class="step-desc">Driver opens app and goes "available." Driver app sends GPS coordinates every <strong>4 seconds</strong> via HTTP or WebSocket to the <code>Location Service</code>. The service stores the driver's location in <code>Redis</code> using the <code>GEOADD</code> command: <code>GEOADD drivers:available longitude latitude driver_id</code>. Redis stores this as a geospatial index using GeoHash internally. Old location automatically expires (TTL = 30s) — driver is considered offline if no update received.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis GEO</span><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Rider Requests a Ride</div>
+            <div class="step-desc">Rider opens app, drops a pin for pickup. <code>Ride Service</code> receives the request with pickup lat/lng. It calls: <code>GEORADIUS drivers:available &lt;lng&gt; &lt;lat&gt; 5 km</code> in Redis — returns list of available driver IDs within 5km radius, sorted by distance. This is an O(N+log M) operation, incredibly fast. A trip record is created in <code>PostgreSQL</code> with status = <code>MATCHING</code>.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis GEORADIUS</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Driver Matching</div>
+            <div class="step-desc">The <code>Matching Service</code> gets the candidate drivers list. It picks the nearest driver and sends them a ride request notification (via WebSocket/push). The driver has 15 seconds to accept. If rejected or timeout, the next closest driver is tried. This is done with a <strong>sequential offer</strong> strategy (not broadcast to all). The winning driver_id is locked in Redis to prevent double-assignment: <code>SET trip:{id}:driver {driver_id} NX EX 300</code>.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis NX Lock</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Real-Time Trip Tracking</div>
+            <div class="step-desc">Once matched, driver app continues sending location every 4 seconds. Now these updates go to a <code>trip-specific Kafka topic</code>. A stream processor pushes each location update via <code>WebSocket</code> to the rider's app. Rider sees the driver moving on the map in real-time. Location events also go into the <code>Kafka stream</code> for surge pricing calculations and analytics.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Price Calculation (Surge Pricing)</div>
+            <div class="step-desc">A <code>Pricing Service</code> consumes demand signals from Kafka: ride requests per city zone per minute vs available drivers per zone. Zones are defined by <strong>H3 hexagonal grids</strong> (Uber's open-source tool). Surge multiplier = demand/supply ratio. Stored in Redis per H3 cell with 1-minute TTL. Price = base fare × surge × distance (from Google Maps Distance Matrix API).</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">H3 GeoIndex</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Google Maps API</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">Trip Completion & Payment</div>
+            <div class="step-desc">Driver marks trip complete. Trip status → <code>COMPLETED</code> in <code>PostgreSQL</code>. Final route traced from stored GPS points (Cassandra/Kafka). Total distance calculated → final fare computed. Payment charge via <code>Stripe API</code>. Receipt emailed. Driver earnings credited to wallet. Ratings and reviews stored. All post-trip work is async via Kafka consumers — doesn't block the driver.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">Stripe</span><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Database Schema</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">trips</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">trip_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">rider_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">driver_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">matching/active/done</span></div>
+            <div class="schema-field"><span class="field-name">pickup_lat/lng</span><span class="field-type">DECIMAL</span></div>
+            <div class="schema-field"><span class="field-name">drop_lat/lng</span><span class="field-type">DECIMAL</span></div>
+            <div class="schema-field"><span class="field-name">fare_cents</span><span class="field-type">INT</span></div>
+            <div class="schema-field"><span class="field-name">surge_multiplier</span><span class="field-type">DECIMAL</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">driver_locations (Redis)</span><span class="schema-db">Redis GEO</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">GEOADD drivers:available</span><span class="field-type">lng lat driver_id</span></div>
+            <div class="schema-field"><span class="field-name">GEORADIUS</span><span class="field-type">→ nearby drivers</span></div>
+            <div class="schema-field"><span class="field-name">TTL per driver</span><span class="field-type">30 seconds</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">4</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why GeoHash/Redis GEO instead of Postgres?</strong> PostgreSQL with PostGIS can do spatial queries but requires a full index scan and is slow at high write rates (1M driver updates/4s = 250K writes/sec). Redis GEO operations are O(N+log M) in memory — orders of magnitude faster.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>H3 hexagonal indexing</strong>: Uber open-sourced H3 — divides the globe into hexagonal cells at multiple resolutions. Hexagons tesselate without distortion unlike squares. This allows perfect zone-based surge pricing and driver allocation.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Preventing double-matching</strong>: When two ride requests come in simultaneously for the same driver, use a <strong>Redis distributed lock</strong> (SET NX EX = Set if Not eXists with expiry). First request gets the lock, second gets rejected and tries next driver.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why save GPS to Kafka not direct DB?</strong> At 250K GPS updates/second, no database can handle direct writes. Kafka buffers all events. A consumer batch-writes to <code>Cassandra</code> (time-series GPS trail). Only the current location lives in Redis — history in Cassandra.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- E-COMMERCE -->
+<div class="system-panel" id="sys-ecom">
+  <div class="sys-header" data-num="05">
+    <span class="sys-icon">🛒</span>
+    <div class="sys-title">E-Commerce Platform</div>
+    <div class="sys-subtitle">e.g. Amazon · Shopify · eBay · Walmart · Flipkart</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--red);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)">TRANSACTIONAL</span>
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">ACID</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">INVENTORY</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>Browse and search products</li>
+            <li>Product details, images, reviews</li>
+            <li>Add to cart, checkout</li>
+            <li>Payment processing</li>
+            <li>Order tracking</li>
+            <li>Inventory management</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Never oversell — inventory must be exact</li>
+            <li>Payment must be idempotent</li>
+            <li>High availability for browsing (reads)</li>
+            <li>Strong consistency for orders/payments</li>
+            <li>Handle flash sales (10K orders/sec spikes)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Architecture Diagram</div>
+      <div class="arch-diagram">
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:700px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-user">👤 Shopper</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-blue">API Gateway</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-cyan">Search Service</div><div class="arch-label">Elasticsearch</div></div>
+            <div class="arch-node"><div class="arch-box box-purple">Product Service</div><div class="arch-label">Redis+Postgres</div></div>
+            <div class="arch-node"><div class="arch-box box-amber">Order Service</div><div class="arch-label">Postgres</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding-left:200px;">
+            <div class="arch-node"><div class="arch-box box-red">Inventory Service</div><div class="arch-label">Redis atomic ops</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-pink">Payment Service</div><div class="arch-label">Stripe + Postgres</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="arch-box box-purple">Kafka</div><div class="arch-label">order.placed</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-node"><div class="arch-box box-green">Notification Service</div></div>
+            <div class="arch-node"><div class="arch-box box-blue">Fulfillment Service</div></div>
+            <div class="arch-node"><div class="arch-box box-amber">Analytics Service</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">User Searches for Products</div>
+            <div class="step-desc">Search query goes to <code>Elasticsearch</code> — full-text search with filters (price range, rating, category). ES ranks results using BM25 + business signals (sponsored, popular). Product images served directly from <code>CDN</code>. Search results are NOT from the main PostgreSQL — that would be too slow for complex queries.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">View Product Page</div>
+            <div class="step-desc"><code>Product Service</code> checks <code>Redis</code> for cached product data. Hit rate ~95% for popular items. On cache miss, fetches from <code>PostgreSQL</code>. Product page also calls <code>Inventory Service</code> to show "In Stock" status — this also comes from Redis (inventory counter), not the DB directly. Product images from <code>CDN</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Add to Cart</div>
+            <div class="step-desc">Cart is stored in <code>Redis</code> as a hash: <code>cart:{session_id} → {product_id: quantity}</code> with a 30-day TTL. No DB write needed for cart. This makes cart operations O(1) and massively reduces DB load. Cart is only persisted to <code>PostgreSQL</code> when user is logged in and order is placed.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Checkout — Inventory Reservation</div>
+            <div class="step-desc">CRITICAL STEP. Before charging the customer, inventory must be reserved. <code>Inventory Service</code> uses a Redis atomic decrement: <code>DECRBY inventory:{product_id} quantity</code>. If result goes below 0 → rollback with INCRBY and return "Out of Stock." This atomic operation prevents overselling without DB-level locks. A reservation record is saved to PostgreSQL with a 15-minute expiry.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Payment Processing</div>
+            <div class="step-desc">Client receives a payment intent from your server. Client submits card details directly to <code>Stripe</code> (PCI compliance — card numbers never touch your servers). Stripe confirms and calls your webhook. Your <code>Payment Service</code> records the payment in <code>PostgreSQL</code> and updates order status. CRITICAL: use an <strong>idempotency key</strong> on every Stripe API call to prevent double charges on retries.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">Order Fulfillment (Saga Pattern)</div>
+            <div class="step-desc">Order placed event goes to <code>Kafka</code>. Multiple consumers: (1) <code>Notification Service</code> → sends confirmation email. (2) <code>Fulfillment Service</code> → updates warehouse. (3) <code>Analytics Service</code> → records sale. If ANY step fails, a <strong>compensating transaction</strong> (Saga) rolls back: refund payment, restore inventory. This is the distributed transaction pattern for microservices.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">4</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Flash Sale problem</strong>: 100K users hit "Buy" simultaneously. If you check inventory in DB under load → DB dies. Solution: pre-load stock into Redis before sale starts. Use <strong>Redis DECR atomic ops</strong> — Redis processes 1M ops/sec single-threaded, so there's no race condition. Only persist final state to DB.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Optimistic vs Pessimistic locking</strong>: Pessimistic = lock the inventory row (blocks other requests). Optimistic = read version, attempt update only if version unchanged (retry on conflict). For e-commerce, <strong>optimistic locking</strong> is preferred for low-contention products. Redis DECR is better for high-contention flash sales.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Saga pattern</strong>: In microservices, you can't do a 2-phase commit across Order DB + Payment DB + Inventory DB. Instead, each service does its local transaction and publishes events. On failure, compensating transactions undo the work. This is eventual consistency done safely.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why not store cart in DB?</strong> A user might add/remove 20 items before checking out. That's 20 writes to a table that holds nothing. Cart is <strong>ephemeral session data</strong> — Redis with TTL is the perfect fit. DB is reserved for confirmed orders.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILE STORAGE -->
+<div class="system-panel" id="sys-storage">
+  <div class="sys-header" data-num="06">
+    <span class="sys-icon">📁</span>
+    <div class="sys-title">File Storage / Cloud Drive</div>
+    <div class="sys-subtitle">e.g. Dropbox · Google Drive · OneDrive · iCloud</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">MEDIA HEAVY</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">SYNC</span>
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">VERSIONING</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>Upload, download, delete files</li>
+            <li>Folder structure, rename, move</li>
+            <li>Sync across devices (auto)</li>
+            <li>Share files/folders with permissions</li>
+            <li>Version history and restore</li>
+            <li>Preview files (images, PDFs, docs)</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Files up to 5GB supported</li>
+            <li>Resume interrupted uploads</li>
+            <li>Deduplicate identical files</li>
+            <li>File changes synced in &lt;30 seconds</li>
+            <li>99.999% durability (no data loss ever)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">File Upload — Chunking</div>
+            <div class="step-desc">Client splits the file into <strong>4MB chunks</strong>. For a 1GB file = 250 chunks. Client computes a <code>SHA-256 hash</code> of each chunk. Client sends the list of chunk hashes to the server. Server checks which chunks it already has. Client only uploads the missing chunks. This enables <strong>deduplication</strong> (if someone else uploaded the same chunk, you skip it) and <strong>resumable uploads</strong> (if connection drops, resume from last uploaded chunk).</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">SHA-256</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">S3 Multipart</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Upload to Storage</div>
+            <div class="step-desc">Client gets a pre-signed <code>S3 URL</code> for each missing chunk. Client uploads each chunk directly to S3. Your servers never proxy the bytes. After all chunks uploaded, client calls your API to "finalize" the file. <code>File Service</code> triggers an S3 multipart complete to assemble chunks into the final object.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">S3 Pre-signed URL</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Metadata Storage</div>
+            <div class="step-desc">File metadata (name, path, size, owner, permissions, version) stored in <code>PostgreSQL</code>. The file content itself is in S3. PostgreSQL stores the mapping: <code>file_id → s3_key</code>. Folder hierarchy modeled as a <strong>closure table</strong> (each ancestor-descendant pair stored explicitly) — enables fast "get all files in folder" queries without recursive CTEs.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Cache</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Cross-Device Sync</div>
+            <div class="step-desc">When Device A uploads a file, a <code>sync.event</code> goes to <code>Kafka</code>. A <code>Sync Service</code> identifies all other devices of the same user and sends a push notification (WebSocket or long-poll) telling them to sync. Device B wakes up, fetches the metadata change, identifies the new/changed file, and downloads only the changed chunks from CDN.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket/Poll</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Version History</div>
+            <div class="step-desc">Every time a file is modified, a new version is created in PostgreSQL: <code>file_id + version_number → new_s3_key</code>. Old S3 objects are NOT deleted — moved to <code>S3 Glacier</code> (cold storage, 10x cheaper). User can browse version history and restore any previous version — it's just a pointer update in PostgreSQL.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">S3 Glacier</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Database Schema</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">files</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">file_id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+            <div class="schema-field"><span class="field-name">name</span><span class="field-type">VARCHAR</span></div>
+            <div class="schema-field"><span class="field-name">owner_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">parent_folder_id</span><span class="field-type">UUID</span></div>
+            <div class="schema-field"><span class="field-name">s3_key</span><span class="field-type">TEXT</span><span class="field-note">latest version</span></div>
+            <div class="schema-field"><span class="field-name">size_bytes</span><span class="field-type">BIGINT</span></div>
+            <div class="schema-field"><span class="field-name">content_hash</span><span class="field-type">VARCHAR(64)</span><span class="field-note">SHA-256</span></div>
+            <div class="schema-field"><span class="field-name">version</span><span class="field-type">INT</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">chunks</span><span class="schema-db">PostgreSQL</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">chunk_hash</span><span class="field-type">VARCHAR(64)</span><span class="field-note">PK (SHA-256)</span></div>
+            <div class="schema-field"><span class="field-name">s3_key</span><span class="field-type">TEXT</span></div>
+            <div class="schema-field"><span class="field-name">size_bytes</span><span class="field-type">INT</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">4</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Content-Addressable Storage</strong>: Store files by their SHA-256 hash, not by name. Two users uploading the same file = one S3 object, two metadata pointers. Dropbox saved petabytes this way — 30% of their files were duplicates.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Delta sync</strong>: When a user edits a large document, don't re-upload the whole file. Identify which 4MB chunks changed (different hash), upload only those. For a 100MB file where only 2 paragraphs changed, you upload ~4MB instead of 100MB.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Conflict resolution in sync</strong>: User edits a file on two devices while offline. When both sync: create two copies — <code>file.txt</code> and <code>file (User's conflicted copy 2024-01-01).txt</code>. User decides which to keep. This is Dropbox's approach — simpler than CRDT for files.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- URL SHORTENER -->
+<div class="system-panel" id="sys-url">
+  <div class="sys-header" data-num="07">
+    <span class="sys-icon">🔗</span>
+    <div class="sys-title">URL Shortener</div>
+    <div class="sys-subtitle">e.g. bit.ly · TinyURL · t.co · short.io</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--pink);border-color:rgba(236,72,153,0.3);background:rgba(236,72,153,0.08)">INFRA</span>
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">HIGH READ</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">CACHE HEAVY</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Requirements</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>Functional</h4>
+          <ul>
+            <li>Shorten a long URL to a 7-char code</li>
+            <li>Redirect short URL to original</li>
+            <li>Custom aliases (my-brand.ly/sale)</li>
+            <li>URL expiry (optional TTL)</li>
+            <li>Click analytics (count, geo, device)</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Redirect in &lt;10ms</li>
+            <li>100:1 read-to-write ratio</li>
+            <li>100M URLs created per day</li>
+            <li>10B redirects per day (~115K/sec)</li>
+            <li>Short codes must be globally unique</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Creating a Short URL — ID Generation</div>
+            <div class="step-desc">User submits a long URL. The key challenge: generate a <strong>unique, short, non-predictable</strong> code. Best approach: Use a <strong>distributed ID generator</strong> (Snowflake or a Redis counter) to get a globally unique integer, then <strong>Base62 encode</strong> it. Base62 uses [a-z, A-Z, 0-9] = 62 characters. A 7-character Base62 string covers 62^7 = <strong>3.5 trillion</strong> unique URLs. Zero collision, no DB check needed.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis INCR</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">Base62 Encode</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Storing the Mapping</div>
+            <div class="step-desc">Store: <code>short_code → long_url</code> in <code>PostgreSQL</code> as the source of truth. Also write to <code>Redis</code> with a TTL matching the URL's expiry. Redis is the primary read path — PostgreSQL is the fallback and analytics store. If a custom alias is requested, check uniqueness in both Redis and PostgreSQL before storing.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Redirect (The Hot Path)</div>
+            <div class="step-desc">User clicks <code>bit.ly/abc1234</code>. Request hits your server. Server does <code>Redis GET abc1234</code> → gets the long URL in microseconds. Server returns <code>HTTP 302</code> redirect to the long URL. Total time: &lt;5ms. If Redis misses (cold cache), fallback to PostgreSQL, then re-warm the cache. 99%+ of traffic never touches the database.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis GET</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">HTTP 302</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Analytics — Click Tracking</div>
+            <div class="step-desc">Every redirect event is published to <code>Kafka</code> asynchronously AFTER the redirect — never block the hot path for analytics. Kafka consumers process: increment click counter in Redis, parse user-agent (device type), geolocate IP, write to <code>Cassandra</code> time-series analytics table. Dashboard queries Cassandra for click trends.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>301 vs 302 redirect</strong>: 301 = Permanent (browser caches it, next visit goes directly — your analytics miss it). 302 = Temporary (browser always asks your server — you count every click). For analytics, use <strong>302</strong>. For performance/cost, use 301. This tradeoff is a classic interview question.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why not MD5/SHA hash of the URL?</strong> MD5 of a URL gives 128 bits. Truncating to 7 chars causes <strong>hash collisions</strong> — two different URLs get the same short code. Base62 encoding of a monotonic ID has zero collisions by design.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Handling hot URLs</strong>: A viral tweet link gets 1M clicks in 1 minute. Redis handles 1M reads/sec easily. But if the key expires at that moment → <strong>thundering herd</strong>: 1M requests all miss cache simultaneously and hammer the DB. Solution: probabilistic cache expiry (refresh slightly before TTL expires) or Cache-Aside with mutex lock.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION SYSTEM -->
+<div class="system-panel" id="sys-notif">
+  <div class="sys-header" data-num="08">
+    <span class="sys-icon">🔔</span>
+    <div class="sys-title">Notification System</div>
+    <div class="sys-subtitle">Push · Email · SMS · In-App · Webhooks</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--pink);border-color:rgba(236,72,153,0.3);background:rgba(236,72,153,0.08)">INFRA</span>
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">FAN-OUT</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">ASYNC</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Trigger Events Enter Kafka</div>
+            <div class="step-desc">Any service can trigger a notification by publishing to Kafka: <code>OrderService → order.placed</code>, <code>ChatService → message.received</code>, <code>PaymentService → payment.failed</code>. The Notification System is purely event-driven — it doesn't know about business logic, only about events and delivery channels.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Notification Router — Channel Decision</div>
+            <div class="step-desc">The <code>Notification Router</code> consumes from Kafka. It checks the user's <strong>preferences</strong> in <code>PostgreSQL</code>: "For order confirmations, user prefers email + push. For marketing, SMS disabled." It also checks <strong>rate limits</strong> in <code>Redis</code>: "Has this user received more than 5 notifications in the last hour?" If yes, drop or queue for later.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Rate Limit</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL Prefs</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Channel-Specific Workers</div>
+            <div class="step-desc">Router publishes to <strong>channel-specific Kafka topics</strong>: <code>notifications.push</code>, <code>notifications.email</code>, <code>notifications.sms</code>. Separate worker pools consume each. Push Worker calls <code>APNs</code> (iOS) or <code>FCM</code> (Android). Email Worker calls <code>SendGrid / AWS SES</code>. SMS Worker calls <code>Twilio</code>. This separation allows independent scaling — 10x push workers vs 1x SMS worker.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">APNs / FCM</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">SendGrid</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Twilio</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Delivery Tracking and Retry</div>
+            <div class="step-desc">Every notification attempt is logged to <code>PostgreSQL</code>: <code>notification_id, status (pending/sent/failed), channel, timestamp</code>. APNs/FCM return delivery status via webhooks. On failure, the worker re-publishes to a <code>retry topic</code> in Kafka with exponential backoff (retry after 1s, 5s, 30s, 5min). After 3 failures, move to dead letter queue (DLQ) for manual inspection.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka DLQ</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">In-App Notification Center</div>
+            <div class="step-desc">In-app notifications (the bell icon with a count) stored in <code>Cassandra</code> per user (time-ordered). Unread count stored in <code>Redis</code> (fast increment). When user opens notification center, batch-fetch from Cassandra with cursor-based pagination. Marking as read: update Cassandra + decrement Redis counter.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Counter</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Idempotency is critical</strong>: Network issues cause duplicate event processing. Use a <strong>unique notification_id</strong> per event. Before sending, check Redis: "Has notification_id=XYZ already been sent?" If yes, skip. This prevents users getting the same email twice on Kafka consumer restart.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Priority lanes</strong>: Not all notifications are equal. "Your house is on fire" (security alert) should not wait behind "Weekly digest email." Use <strong>separate Kafka topics by priority</strong>: <code>high-priority</code> (real-time workers), <code>low-priority</code> (batch workers). High priority never waits for low.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Device token management</strong>: APNs/FCM tokens expire when user uninstalls/reinstalls app. If you send to a stale token, APNs returns "invalid token." Your system must <strong>delete the stale token</strong> immediately and stop sending to it — otherwise you waste quota and money.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH TYPEAHEAD -->
+<div class="system-panel" id="sys-search">
+  <div class="sys-header" data-num="09">
+    <span class="sys-icon">🔍</span>
+    <div class="sys-title">Search / Typeahead System</div>
+    <div class="sys-subtitle">e.g. Google Suggest · Twitter Search · Amazon Search</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">DATA SCALE</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">LOW LATENCY</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Typeahead — Prefix Suggestions</div>
+            <div class="step-desc">User types "iph" → need top-5 suggestions. Strategy: use a <code>Redis Sorted Set</code> per prefix where score = search frequency. <code>ZREVRANGE suggest:iph 0 4</code> returns top 5. Precompute this for every 2-3 character prefix. A single search query updates all its prefix sets: "iphone 15" → update <code>suggest:i</code>, <code>suggest:ip</code>, <code>suggest:iph</code>, etc. All O(log N), sub-millisecond reads.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Sorted Set</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Full-Text Search with Elasticsearch</div>
+            <div class="step-desc">When user hits Enter, query goes to <code>Elasticsearch</code>. ES uses an <strong>inverted index</strong>: every word in every document maps to a list of document IDs. <code>GET /products/_search?q=iphone</code> → ES looks up "iphone" in the inverted index → gets all doc IDs → fetches and ranks them by relevance score (BM25 algorithm). Filters (price, category) applied as post-query.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Elasticsearch</span><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">BM25</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Indexing New Content</div>
+            <div class="step-desc">When a new product/post is created in the main <code>PostgreSQL</code>, an event goes to <code>Kafka</code>. The <code>Indexer Service</code> consumes it and writes to <code>Elasticsearch</code>. This is async — ES is eventually consistent with the source DB. Never use ES as your source of truth — it's read-only for search. The sequence: write to PostgreSQL → Kafka event → ES index update (within seconds).</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Elasticsearch</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Search Ranking</div>
+            <div class="step-desc">Pure BM25 relevance is not enough. Combine multiple signals: <strong>text relevance</strong> (BM25 score) + <strong>popularity</strong> (click-through rate, purchase rate) + <strong>recency</strong> (newer = boosted) + <strong>personalization</strong> (user's past searches/purchases). Each signal gets a weight. This combined score is computed by ES's <code>function_score</code> query. Personalization signals fetched from a <code>User Profile Service</code> (Redis cache).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Inverted index explained simply</strong>: Normal index: book → words. Inverted index: word → list of books. When searching "iphone," the inverted index gives you the document list instantly — no scanning needed. This is how every search engine works.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Typo tolerance</strong>: "iphne" should still find "iphone." Use Elasticsearch's <strong>fuzzy search</strong> (edit distance/Levenshtein distance). Also precompute phonetic variations. Limit fuzzy matching to 2 character edits for performance.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Sharding ES</strong>: ES shards its index horizontally. Shard by content type (products vs users vs posts) or by date (current month shard vs archive shards). More shards = more parallelism = faster query. Too many shards = overhead. Rule of thumb: shard size &lt;50GB.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div class="system-panel" id="sys-payment">
+  <div class="sys-header" data-num="10">
+    <span class="sys-icon">💳</span>
+    <div class="sys-title">Payment / Wallet System</div>
+    <div class="sys-subtitle">e.g. Stripe · PayPal · Venmo · Google Pay · Razorpay</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--red);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)">TRANSACTIONAL</span>
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">ACID</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">IDEMPOTENT</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Initiate Payment — Idempotency First</div>
+            <div class="step-desc">Client generates a unique <code>idempotency_key</code> (UUID) before making any API call. This key is sent with every request. Server checks <code>Redis</code>: "Have I seen this key before?" If yes, return the SAME response as before. If no, proceed. This ensures that if the network drops and the client retries, they never get double-charged. This is the #1 rule in payment systems.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Idempotency</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Balance Deduction — ACID Transaction</div>
+            <div class="step-desc">Payment involves multiple DB operations that must all succeed or all fail: (1) Deduct from sender's balance, (2) Add to receiver's balance, (3) Create a transaction record. All three happen in a single <strong>ACID database transaction</strong> in <code>PostgreSQL</code>. If any step fails, the entire transaction rolls back. This is why PostgreSQL (not Cassandra, not Redis) handles money — atomicity and consistency are guaranteed.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL ACID</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Double-Entry Bookkeeping</div>
+            <div class="step-desc">Every payment creates TWO ledger entries (not one): a <strong>DEBIT</strong> on the sender's account and a <strong>CREDIT</strong> on the receiver's account. The sum of all credits must always equal the sum of all debits. This mathematical invariant makes it impossible to "lose" or "create" money. Every financial system since 1400s uses this. Ledger table: <code>account_id, amount (±), type, reference_id, timestamp</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Payment to External Provider (Stripe)</div>
+            <div class="step-desc">For card payments, your server creates a <strong>PaymentIntent</strong> via Stripe API (never handle card numbers yourself). Client submits card details to Stripe's servers directly. Stripe returns a token. Your server confirms the payment using the token. Stripe calls your webhook when payment succeeds/fails. Store the Stripe <code>payment_intent_id</code> in your DB — this is your external reference for disputes.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Stripe API</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Webhook</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Post-Payment — Async Processing</div>
+            <div class="step-desc">On successful payment, publish <code>payment.succeeded</code> event to <code>Kafka</code>. Consumers: Notification Service (receipt email/SMS), Fraud Detection Service (analyze patterns), Analytics Service (revenue metrics), Reconciliation Service (daily settlement with bank). None of this blocks the user's payment confirmation.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why PostgreSQL and not NoSQL for payments?</strong> Money requires <strong>strong ACID consistency</strong>. If two requests read the same balance simultaneously and both deduct, you get negative balance. PostgreSQL's serializable isolation prevents this. Cassandra's eventual consistency means a 0.001% chance of data anomaly — unacceptable when money is involved.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Distributed lock for concurrent payments</strong>: User has $100, sends $80 to Alice and $80 to Bob simultaneously. Both reads show $100. Both deductions succeed individually. Result: $-60 balance. Solution: <strong>SELECT FOR UPDATE</strong> in PostgreSQL (pessimistic lock) or <strong>Redis Redlock</strong> for cross-service locking. Lock the account row before reading.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Event sourcing for audit trail</strong>: Never UPDATE a payment record — only INSERT new events (payment initiated, captured, refunded). The current state = replay of all events. Every cent is accounted for. Regulators love this. This is how real banks work.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RATE LIMITER -->
+<div class="system-panel" id="sys-ratelimit">
+  <div class="sys-header" data-num="11">
+    <span class="sys-icon">🚦</span>
+    <div class="sys-title">Rate Limiter</div>
+    <div class="sys-subtitle">API throttling · DDoS protection · Fair use quotas</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--pink);border-color:rgba(236,72,153,0.3);background:rgba(236,72,153,0.08)">INFRA</span>
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">HIGH SPEED</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Where to Put the Rate Limiter</div>
+            <div class="step-desc">Rate limiting should happen at the <strong>edge</strong>, before requests reach app servers. Options: (1) API Gateway layer (AWS API Gateway, Kong). (2) NGINX middleware. (3) Application code (last resort). Edge enforcement means blocked requests never consume application resources. Rate limit by: <code>API key</code>, <code>user_id</code>, <code>IP address</code>, or combinations.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Token Bucket Algorithm (Best for most APIs)</div>
+            <div class="step-desc">Each user has a "bucket" with capacity N tokens. Tokens refill at a fixed rate (e.g., 100 tokens/minute). Each request consumes 1 token. If bucket has tokens → allow. If bucket empty → reject with <code>HTTP 429</code>. Implementation in Redis: <code>INCR user:{id}:tokens</code> on refill timer, <code>DECR</code> on each request. <strong>Allows bursts</strong> up to bucket capacity — perfect for APIs where legitimate users sometimes spike.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis INCR/DECR</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Sliding Window Counter (Best accuracy)</div>
+            <div class="step-desc">Divide time into 1-second sub-windows. For a "100 requests/minute" limit: maintain a Redis counter for each second for the past 60 seconds. Sum of all 60 counters = request count in the sliding window. If sum &lt;100 → allow and increment current-second counter. This is more accurate than fixed window but slightly more complex. Implementation: Redis sorted set of timestamps, or per-second hash keys with TTL.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Sorted Set</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Distributed Rate Limiting</div>
+            <div class="step-desc">With multiple servers, local in-memory counters don't work — each server sees only its own traffic. Solution: use a centralized <code>Redis cluster</code> as the shared state. All servers increment/check the SAME Redis key. For ultra-high throughput, use a Lua script in Redis to make the check+increment <strong>atomic</strong>: no race conditions even at 1M requests/sec.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Lua Script</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>All Algorithms Compared</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Token Bucket</span><span class="schema-db">Most Common</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Allows bursts</span><span class="field-type">✅ Yes</span></div>
+            <div class="schema-field"><span class="field-name">Memory</span><span class="field-type">Low</span></div>
+            <div class="schema-field"><span class="field-name">Use for</span><span class="field-type">General APIs</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Fixed Window</span><span class="schema-db">Simplest</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Allows bursts</span><span class="field-type">⚠️ At boundary</span></div>
+            <div class="schema-field"><span class="field-name">Memory</span><span class="field-type">Very Low</span></div>
+            <div class="schema-field"><span class="field-name">Problem</span><span class="field-type">2x burst at edge</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Sliding Window Log</span><span class="schema-db">Most Accurate</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Allows bursts</span><span class="field-type">❌ No</span></div>
+            <div class="schema-field"><span class="field-name">Memory</span><span class="field-type">High (per request)</span></div>
+            <div class="schema-field"><span class="field-name">Use for</span><span class="field-type">Critical APIs</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Sliding Window Counter</span><span class="schema-db">Best Tradeoff</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Allows bursts</span><span class="field-type">⚠️ Slightly</span></div>
+            <div class="schema-field"><span class="field-name">Memory</span><span class="field-type">Low</span></div>
+            <div class="schema-field"><span class="field-name">Use for</span><span class="field-type">Production APIs</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Fixed window double-burst problem</strong>: Limit is 100 req/min. Window resets at :00. User sends 100 at :59, then 100 at :01. Both windows say they're fine. But in 2 seconds, 200 requests got through. Sliding window solves this by always looking at the past 60 seconds regardless of clock boundaries.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Return the right headers</strong>: Always return <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>, and <code>Retry-After</code> on 429 responses. Good API design — lets clients back off intelligently instead of hammering blindly.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Layered rate limiting</strong>: Apply at multiple levels simultaneously: Global (100K req/sec for the whole API), Per-IP (1K req/sec to block DDoS), Per-User (100 req/min for free tier), Per-Endpoint (/auth/login = 5 attempts/hour to prevent brute force).</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COLLABORATIVE DOCS -->
+<div class="system-panel" id="sys-collab">
+  <div class="sys-header" data-num="12">
+    <span class="sys-icon">📝</span>
+    <div class="sys-title">Collaborative Docs</div>
+    <div class="sys-subtitle">e.g. Google Docs · Notion · Figma · Miro</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">REAL-TIME</span>
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">CRDT</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">CONFLICT RESOLVE</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>The Core Problem</div>
+      <div class="req-grid">
+        <div class="req-box req-func">
+          <h4>The Challenge</h4>
+          <ul>
+            <li>User A and User B edit the same line simultaneously</li>
+            <li>Both see "Hello World" initially</li>
+            <li>A changes it to "Hello Alice"</li>
+            <li>B changes it to "Hello Bob"</li>
+            <li>What should both see after sync?</li>
+            <li>Both edits must merge without data loss</li>
+          </ul>
+        </div>
+        <div class="req-box req-nonfunc">
+          <h4>Non-Functional</h4>
+          <ul>
+            <li>Edits propagated in &lt;100ms</li>
+            <li>100 concurrent editors per document</li>
+            <li>Offline editing supported</li>
+            <li>Full version history</li>
+            <li>Works even on bad networks</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">User Opens Document — Joins a Room</div>
+            <div class="step-desc">User opens the document URL. Client establishes a <code>WebSocket</code> connection to a <code>Document Server</code> for that doc_id. Server adds user to the document "room." Current document state is fetched from <code>PostgreSQL</code> (latest snapshot) and sent to the client. Other users in the room are notified of the new presence. Cursor position registered in <code>Redis</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">User Types — Operation Generated</div>
+            <div class="step-desc">Every keystroke generates an <strong>operation</strong>: <code>{type: "insert", position: 42, char: "A", user_id: "U1", timestamp: T1}</code>. The client applies the operation locally FIRST (optimistic update — user sees their own typing immediately). Then sends the operation to the server. This is why collaborative editors feel snappy — you never wait for round-trip confirmation to see your own keystrokes.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Conflict Resolution — OT or CRDT</div>
+            <div class="step-desc"><strong>Operational Transformation (OT)</strong>: When two operations conflict (same position), transform one relative to the other. Example: A inserts at position 5, B deletes at position 5. When A's operation arrives at B's client after B's delete, OT adjusts A's position to account for B's deletion. Google Docs uses OT — requires a central server to order operations. <strong>CRDT</strong>: Each character gets a globally unique ID. Merging is mathematically guaranteed to converge. No central ordering needed. Figma uses CRDTs. Modern approach, more complex to implement.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">OT</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">CRDT</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Broadcasting to Other Editors</div>
+            <div class="step-desc">Server receives operation from User A, applies OT/CRDT to resolve conflicts, then broadcasts the <strong>transformed operation</strong> to all other users in the document room via WebSocket. Each client applies the received operation to their local document state. The document converges to the same state on all clients. Operations are also appended to a log in <code>Cassandra</code> for version history.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket Broadcast</span><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra Log</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Persistence and Snapshots</div>
+            <div class="step-desc">Don't save the document on every keystroke — that's thousands of DB writes/minute. Instead: buffer operations in memory, auto-save a full <strong>document snapshot</strong> to <code>PostgreSQL</code> every 30 seconds. Keep the operation log in <code>Cassandra</code>. Version history = list of snapshots + the operations between snapshots. To restore to any point in time: load the nearest snapshot + replay operations up to that timestamp.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">PostgreSQL Snapshot</span><span class="step-pill" style="background:rgba(239,68,68,0.15);color:var(--red)">Cassandra Ops Log</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>OT requires central server, CRDT doesn't</strong>: OT works because the server sees ALL operations in a total order. CRDT works peer-to-peer because the merge is deterministic regardless of order. For Google Docs-style (server-authoritative), OT is fine. For Figma-style (offline-first, P2P), use CRDT.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Presence indicators</strong>: "Sarah is editing line 42" — cursor positions stored in <code>Redis</code> with 5-second TTL (updated on each cursor move). When TTL expires, user's cursor disappears. Broadcast cursor updates via WebSocket. DO NOT save cursors to PostgreSQL — they're purely ephemeral.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why snapshots + operation log?</strong>: Replaying 1M operations to reconstruct a document from scratch takes too long. Take periodic snapshots so you only replay the last N operations. This is the classic <strong>write-ahead log + checkpoint</strong> pattern (same idea as PostgreSQL itself uses internally).</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECOMMENDATION ENGINE -->
+<div class="system-panel" id="sys-reco">
+  <div class="sys-header" data-num="13">
+    <span class="sys-icon">🤖</span>
+    <div class="sys-title">Recommendation Engine</div>
+    <div class="sys-subtitle">e.g. Netflix · Amazon · Spotify · YouTube algorithm</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">DATA SCALE</span>
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">ML PIPELINE</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Collecting Behavioral Signals</div>
+            <div class="step-desc">Every user action is a signal: watched 80% of a video, clicked a product, added to cart, skipped a song. These events stream into <code>Kafka</code> in real-time: <code>{user_id, item_id, action, timestamp}</code>. A <code>Spark Streaming</code> job consumes Kafka and maintains a <strong>rolling feature vector</strong> per user: "User U1 likes: action movies, sci-fi, 90-minute films."</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Spark Streaming</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Offline Training — Matrix Factorization</div>
+            <div class="step-desc">Daily batch job in <code>Spark</code> trains a model on all historical interactions (stored in <code>Snowflake</code>). The model: a user-item interaction matrix (rows=users, cols=items, value=rating/interaction). <strong>Matrix Factorization</strong> decomposes this into two smaller matrices: a User embedding matrix and an Item embedding matrix. Each user and item gets a vector of 100 numbers representing their "taste DNA." Similar users → similar vectors.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Spark ALS</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">Snowflake</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Storing Embeddings in Vector DB</div>
+            <div class="step-desc">All item and user embeddings (100-dimensional vectors) are stored in a <strong>Vector Database</strong> (<code>Pinecone</code> or <code>pgvector</code>). To find recommendations for User A: fetch User A's embedding vector, query the vector DB for the top-K item vectors with smallest <strong>cosine distance</strong>. These are the most similar items. This is <strong>Approximate Nearest Neighbor (ANN) search</strong>. Retrieves 1000 candidates in milliseconds across millions of items.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Pinecone / pgvector</span><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">ANN Search</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Two-Stage Recommendation</div>
+            <div class="step-desc"><strong>Stage 1 — Retrieval</strong>: Vector DB returns top 1000 candidate items from millions (recall). Fast but not super accurate. <strong>Stage 2 — Ranking</strong>: A more complex ML model scores each of the 1000 candidates using rich features (time of day, device, recent context, diversity). Returns top 20 for display. This two-stage approach is used by Netflix, YouTube, Spotify. Stage 1 runs in &lt;50ms, Stage 2 in &lt;100ms.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Serving and Caching Results</div>
+            <div class="step-desc">Precompute recommendations for every active user during off-peak hours. Store the top-50 recommendations per user in <code>Redis</code>. When user opens the app, recommendations are retrieved from Redis in milliseconds — no model inference needed. Refresh the cache every 30 minutes or on significant new behavior. Cold-start (new user): serve trending/popular items until enough data collected.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Cache</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Collaborative Filtering vs Content-Based</strong>: CF: "Users who liked X also liked Y." Problem: cold start (no data on new items). Content-based: "This item has features similar to what you liked." Problem: filter bubble (never discovers new types). Netflix uses <strong>hybrid</strong> — both together.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why precompute?</strong>: Running ANN search + ranking model at request time for every user = expensive. For 100M users all logging in at morning, that's 100M inference calls simultaneously. Precompute at night when traffic is low, serve from Redis at peak time. Trade freshness for latency and cost.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Diversity injection</strong>: Pure ML recommendations would show 10 variations of the same thing (10 action movies). Deliberately inject diversity: enforce max 2 items per category, add random exploration (10% of results are random items to gather new signal). This is the <strong>explore vs exploit tradeoff</strong>.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IOT -->
+<div class="system-panel" id="sys-iot">
+  <div class="sys-header" data-num="14">
+    <span class="sys-icon">📡</span>
+    <div class="sys-title">IoT / Sensor Data Platform</div>
+    <div class="sys-subtitle">Smart home · Industrial sensors · Fleet tracking · Wearables</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--purple);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)">DATA SCALE</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">TIME-SERIES</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Device Sends Data — MQTT Protocol</div>
+            <div class="step-desc">IoT devices are resource-constrained (low CPU, low battery). HTTP is too heavy. Use <strong>MQTT</strong> — a lightweight pub/sub protocol designed for IoT (2-byte header vs HTTP's 200+ byte overhead). Devices publish to an <code>MQTT Broker</code> (e.g., Mosquitto, AWS IoT Core) on topics like <code>home/livingroom/temperature</code>. The broker handles millions of persistent connections efficiently.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">MQTT</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">AWS IoT Core</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Ingestion into Kafka</div>
+            <div class="step-desc">MQTT Broker forwards all sensor messages to <code>Kafka</code>. Topic partitioned by device_id (all messages from one device go to the same partition → ordered). Kafka handles the flood: 1M sensors × 1 msg/sec = 1M messages/sec ingested. This decouples the device-facing layer (MQTT) from the processing layer — you can add consumers without changing devices.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Kafka</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Stream Processing — Real-Time Alerts</div>
+            <div class="step-desc"><code>Apache Flink</code> or <code>Kafka Streams</code> processes the Kafka stream in real-time. Applies <strong>windowed aggregations</strong>: "Average temperature over the last 5 minutes." Detects anomalies: "If temperature &gt; 80°C for 3 consecutive readings → fire alert." Alert goes to Kafka → Notification Service → SMS/push to user. All within 1-2 seconds of the sensor reading.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">Apache Flink</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Persistence — Time-Series Database</div>
+            <div class="step-desc">Raw sensor data is written to <code>InfluxDB</code> or <code>TimescaleDB</code>. These are databases optimized for time-stamped data: fast writes (all appends, no updates), automatic <strong>data retention policies</strong> (keep raw data for 7 days, 1-minute aggregates for 90 days, hourly averages for 5 years), built-in downsampling (reduces storage by 1000x over time). Never use PostgreSQL for high-frequency sensor data — it lacks these optimizations.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">InfluxDB</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">TimescaleDB</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Dashboard — Visualization</div>
+            <div class="step-desc"><code>Grafana</code> connects directly to InfluxDB/TimescaleDB and renders real-time charts. Supports alerting rules (threshold-based), annotations (mark events on graphs), and user-defined dashboards. For user-facing dashboards (not internal), the API fetches aggregated time-series data from InfluxDB and returns it to the frontend. Cache common queries (last 24h dashboard) in <code>Redis</code> with 1-minute TTL.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">Grafana</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Cache</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Why time-series DB instead of regular DB?</strong>: IoT data is always <code>(timestamp, value)</code> pairs, always appended never updated. TimescaleDB uses <strong>hypertables</strong> — automatically partitions data by time ranges. Queries like "last 7 days" only scan the recent partition, not the entire table. Regular DBs would need full scans.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Edge processing to reduce bandwidth</strong>: A factory with 10K sensors sending readings every 100ms = 100K messages/sec to the cloud. Instead: run a small computer (edge node) at the factory. Pre-aggregate locally (average over 1 second), detect anomalies locally, send only summary + alerts to cloud. Reduces bandwidth by 100x.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Data retention economics</strong>: Storing 1M sensors × 1 reading/sec raw for 5 years = ~500TB. But who needs 5-year-old raw readings at 1-second granularity? Downsample: keep 1-second for 7 days, 1-minute for 90 days, 1-hour for forever. Storage drops to ~5TB. This is called a <strong>rollup strategy</strong>.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE STREAMING -->
+<div class="system-panel" id="sys-live">
+  <div class="sys-header" data-num="15">
+    <span class="sys-icon">🎮</span>
+    <div class="sys-title">Live Streaming Platform</div>
+    <div class="sys-subtitle">e.g. Twitch · YouTube Live · Instagram Live · Zoom</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--cyan);border-color:rgba(34,211,238,0.3);background:rgba(34,211,238,0.08)">REAL-TIME</span>
+      <span class="sys-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)">MEDIA HEAVY</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Streamer Goes Live — RTMP Ingest</div>
+            <div class="step-desc">Streamer's software (OBS, mobile app) pushes video via <strong>RTMP protocol</strong> (Real-Time Messaging Protocol) to an <code>Ingest Server</code>. RTMP is designed for low-latency live video push. The ingest server is the single entry point for the raw video stream. Streamer authenticates with a unique <strong>stream key</strong> (never share this — it's like a password for going live).</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">RTMP</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Transcoding — RTMP to HLS</div>
+            <div class="step-desc">Ingest Server passes the RTMP stream to a fleet of <strong>Transcoding Servers</strong> (FFmpeg). They convert the stream into <strong>HLS (HTTP Live Streaming)</strong> format: chop into 2-6 second <code>.ts</code> chunk files, generate a <code>.m3u8</code> manifest. Transcode into multiple resolutions simultaneously: 1080p, 720p, 480p, 360p. Chunks are written to <code>S3</code> as they're created. This adds 6-30 seconds of latency (the "live delay").</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">FFmpeg</span><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">HLS</span><span class="step-pill" style="background:rgba(245,158,11,0.15);color:var(--amber)">S3</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">CDN Distribution</div>
+            <div class="step-desc">S3 is the origin. CDN pulls HLS chunks from S3 and caches them at edge nodes globally. For a streamer with 100K viewers worldwide, the CDN fans out the stream to regional edge nodes. Each viewer downloads chunks from their nearest edge node, not from S3. 100K viewers → CDN serves all of them; your origin handles only the first request per chunk per edge node.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">CDN</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Live Chat — Fan-out at Scale</div>
+            <div class="step-desc">Chat messages sent via <code>WebSocket</code> to <code>Chat Server</code>. For a channel with 50K concurrent viewers, one message must be broadcast to 50K WebSocket connections. This is a fan-out problem. Solution: partition viewers into "chatrooms" of 1000 users each. A message broadcasts to 50 chatrooms (50 servers) simultaneously. Each server pushes to its 1000 connections. <code>Redis Pub/Sub</code> routes messages between chat servers.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,211,238,0.15);color:var(--cyan)">WebSocket</span><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Pub/Sub</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Live Viewer Count</div>
+            <div class="step-desc">Use <code>Redis HyperLogLog</code>: <code>PFADD stream:{id}:viewers {user_id}</code> on each heartbeat, <code>PFCOUNT</code> to get approximate unique count. Accurate to ±0.81% using only 12KB memory regardless of viewer count. Display updates every 5 seconds. Exact count doesn't matter — no viewer can tell the difference between 143,823 and 143,989 viewers.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis HyperLogLog</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>HLS latency tradeoff</strong>: HLS has 6-30 second delay because viewers are watching chunks that were created seconds ago. This is unavoidable at scale. For sub-second latency (Zoom, gaming), use <strong>WebRTC</strong> — but WebRTC doesn't scale past ~100 concurrent viewers without media servers (SFU/MCU). Choose: scale OR latency, not both.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>VOD from live</strong>: After the stream ends, you already have all the HLS chunks in S3. Simply combine the manifests — the stream is automatically available as a Video On Demand (VOD) recording with zero additional processing. This is why Twitch VODs appear instantly after a stream ends.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Chat moderation at scale</strong>: With 50K viewers, chat moves too fast to read. Apply ML-based auto-moderation on every message before broadcasting. Keep a separate "slow mode" option (1 message per user per 30 seconds) for large channels. Store only a rolling window of last 1000 messages per channel in Redis.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISTRIBUTED CACHE -->
+<div class="system-panel" id="sys-cache">
+  <div class="sys-header" data-num="16">
+    <span class="sys-icon">⚡</span>
+    <div class="sys-title">Distributed Cache System</div>
+    <div class="sys-subtitle">Redis Cluster · Memcached · CDN design · Cache strategies</div>
+    <div class="sys-tags">
+      <span class="sys-tag" style="color:var(--pink);border-color:rgba(236,72,153,0.3);background:rgba(236,72,153,0.08)">INFRA</span>
+      <span class="sys-tag" style="color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)">LOW LATENCY</span>
+    </div>
+  </div>
+  <div class="sys-body">
+    <div class="section">
+      <div class="section-label"><span class="section-num">1</span>Step-by-Step Data Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Cache-Aside Pattern (Most Common)</div>
+            <div class="step-desc">Application checks cache FIRST. <strong>Cache HIT</strong>: return data from Redis (~1ms). <strong>Cache MISS</strong>: fetch from DB (~100ms), store in Redis with TTL, return data. Application is responsible for all cache interactions. The cache is a lazy cache — only populated when first requested. Simple, flexible, most widely used pattern. Works well when reads >> writes.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis GET</span><span class="step-pill" style="background:rgba(79,110,247,0.15);color:var(--accent)">Redis SET with EX</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Write-Through Pattern</div>
+            <div class="step-desc">Every write goes to BOTH the cache and the DB simultaneously. Cache is always consistent with DB. Reads always hit cache. Downside: write latency increases (must wait for both). Useful when data is read immediately after being written (e.g., user profile update → immediately shown to the user). But wastes cache space on items that are written but never read again.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Horizontal Scaling — Consistent Hashing</div>
+            <div class="step-desc">When you have 3 Redis nodes, how do you decide which node stores key "user:123"? <strong>Naive approach</strong>: <code>hash(key) % 3</code>. Problem: adding a 4th node → <code>% 4</code> → almost every key remaps → massive cache miss storm. <strong>Consistent hashing</strong>: arrange nodes on a virtual ring. Key maps to the first node clockwise. Adding a node only remaps ~1/N keys. Redis Cluster uses this internally with 16,384 hash slots.</div>
+            <div class="step-tech"><span class="step-pill" style="background:rgba(34,197,94,0.15);color:var(--green)">Redis Cluster</span><span class="step-pill" style="background:rgba(168,85,247,0.15);color:var(--purple)">Consistent Hash</span></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Cache Eviction Policies</div>
+            <div class="step-desc"><strong>LRU (Least Recently Used)</strong>: evict keys not accessed recently. Best for general-purpose caches. <strong>LFU (Least Frequently Used)</strong>: evict keys accessed least often overall. Better for workloads with stable hot keys. <strong>TTL-based</strong>: set an explicit expiry on each key. Guaranteed freshness. Most production systems combine: set a TTL AND use LRU within TTL'd keys. Redis supports all policies via <code>maxmemory-policy</code> config.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Common Cache Failure Patterns</div>
+            <div class="step-desc"><strong>Cache Stampede</strong>: Popular key expires → 10K requests all miss simultaneously → DB gets hammered. Fix: use a <strong>mutex lock</strong> on cache miss (first request fetches from DB, others wait). Or use probabilistic early expiry — randomly refresh before expiry. <strong>Cache Penetration</strong>: Requests for keys that will never exist (user:9999999) bypass cache every time. Fix: cache null results with short TTL, or use a <strong>Bloom Filter</strong> at the door. <strong>Cache Avalanche</strong>: All keys expire at the same time. Fix: add random jitter to TTL values.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">2</span>Cache Strategy Comparison</div>
+      <div class="schema-grid">
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Cache-Aside</span><span class="schema-db">Most Common</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Consistency</span><span class="field-type">Eventually</span></div>
+            <div class="schema-field"><span class="field-name">Read perf</span><span class="field-type">Fast</span></div>
+            <div class="schema-field"><span class="field-name">Write perf</span><span class="field-type">Normal</span></div>
+            <div class="schema-field"><span class="field-name">Best for</span><span class="field-type">Read-heavy</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Write-Through</span><span class="schema-db">Consistent</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Consistency</span><span class="field-type">Strong</span></div>
+            <div class="schema-field"><span class="field-name">Read perf</span><span class="field-type">Fast</span></div>
+            <div class="schema-field"><span class="field-name">Write perf</span><span class="field-type">Slower</span></div>
+            <div class="schema-field"><span class="field-name">Best for</span><span class="field-type">Read-after-write</span></div>
+          </div>
+        </div>
+        <div class="schema-table">
+          <div class="schema-thead"><span class="schema-name">Write-Behind</span><span class="schema-db">Async</span></div>
+          <div class="schema-body">
+            <div class="schema-field"><span class="field-name">Consistency</span><span class="field-type">Eventual</span></div>
+            <div class="schema-field"><span class="field-name">Read perf</span><span class="field-type">Fast</span></div>
+            <div class="schema-field"><span class="field-name">Write perf</span><span class="field-type">Very Fast</span></div>
+            <div class="schema-field"><span class="field-name">Risk</span><span class="field-type">Data loss on crash</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="section-num">3</span>Interview Gold 🏆</div>
+      <div class="tricks-box">
+        <div class="tricks-header">⚡ Say These in Your Interview</div>
+        <div class="tricks-list">
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Cache stampede is the most common cache failure</strong>: "We had a major outage when our cache expired and 100K requests hit the DB simultaneously." Showing you know this problem and its solution (mutex + probabilistic refresh) immediately marks you as experienced.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Bloom Filter for cache penetration</strong>: A Bloom Filter is a probabilistic data structure. "Is user_id=99999 in our system?" Bloom says NO → skip DB entirely. Bloom says YES → might be in DB (small false positive rate), check DB. 0% false negatives. Uses 10x less memory than a hash set for the same data.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>What to cache?</strong> Cache what's: (1) expensive to compute, (2) read frequently, (3) changes infrequently, (4) OK to be slightly stale. Don't cache: financial balances (must be exact), session security tokens (must be invalidated instantly), user-generated content that changes every second.</div></div>
+          <div class="trick-item"><div class="trick-bullet">!</div><div class="trick-text"><strong>Hot key problem</strong>: One Redis key gets 1M requests/sec (a celebrity's profile). Single Redis node can't handle it. Solutions: <strong>local in-process cache</strong> on each app server (100ms TTL), or <strong>replicate hot keys</strong> to multiple Redis nodes and randomly pick one (load spread).</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function showSystem(id) {
+  document.querySelectorAll('.system-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sys-' + id).classList.add('active');
+  document.getElementById('main').scrollTop = 0;
+  event.currentTarget.classList.add('active');
+}
+
+function searchNav() {
+  const q = document.getElementById('navSearch').value.toLowerCase();
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const name = item.dataset.name.toLowerCase();
+    item.style.display = name.includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
