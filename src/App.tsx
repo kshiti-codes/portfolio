@@ -14,8 +14,10 @@ import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { LoadingScreen } from './components/LoadingScreen';
 import './styles/globals.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import KnowledgeHub from './pages/KnowledgeHub';
 
-export default function App() {
+function MainLayout() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -53,5 +55,15 @@ export default function App() {
       {/* Scroll to Top Button */}
       <ScrollToTop />
     </div>
+  );
+}
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />} />
+        <Route path="/knowledgehub" element={<KnowledgeHub />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

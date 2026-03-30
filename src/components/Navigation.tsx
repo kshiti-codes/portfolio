@@ -72,6 +72,9 @@ export const Navigation: React.FC = () => {
                   {item.label}
                 </button>
               ))}
+              <a href="/knowledgehub" className="text-foreground/80 hover:text-primary transition-colors">
+                Knowledge Hub
+              </a>
               <Button
                 variant="ghost"
                 size="icon"
@@ -123,6 +126,9 @@ export const Navigation: React.FC = () => {
                   {item.label}
                 </button>
               ))}
+              <a href="/knowledgehub" className="text-left text-foreground hover:text-primary transition-colors py-2">
+                Knowledge Hub
+              </a>
             </div>
           </motion.div>
         )}
